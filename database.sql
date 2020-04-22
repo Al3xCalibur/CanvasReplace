@@ -1,0 +1,6 @@
+CREATE TABLE pixels (
+  'id' INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  'color' VARCHAR(20),
+  'position' POINT NOT NULL SRID 0,
+  SPATIAL INDEX ('position')
+);

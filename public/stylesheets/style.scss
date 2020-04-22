@@ -5,11 +5,14 @@ body {
   margin: 0;
 }
 
-canvas {
+#drawing {
   background-color:white;
 }
 
 canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
   display:block;
   image-rendering: crisp-edges;
 }
@@ -19,5 +22,6 @@ button {
   bottom:10px;
   height:20px;
   width:40px;
-  border:1px solid black
+  border:1px solid black;
+  z-index:10;
 }

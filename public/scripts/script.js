@@ -1,7 +1,11 @@
 const socket = io(window.location.origin)
 
 const canvas = document.getElementById('drawing')
+const canvasInterface = document.getElementById('interface')
+
 const ctx = canvas.getContext('2d')
+const ctxInterface = canvasInterface.getContext('2d')
+
 const size = 5
 
 window.mobileCheck = function () {
@@ -16,20 +20,35 @@ window.addEventListener('resize', resizeCanvas, false);
 function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    canvasInterface.width = window.innerWidth;
+    canvasInterface.height = window.innerHeight;
+
     ctx.imageSmoothingEnabled = false
+    ctxInterface.imageSmoothingEnabled = false
     draw()
 }
 
 
-let scale = 1
+let scale = 2
 let translateX = 0
 let translateY = 0
 
 ctx.lineWidth = 2
 let actualColor = "black"
-let moved = false
+
+let highlight = null
+let startDrag = null
 
 class Rectangle {
+    constructor(x, y, width, height) {
+        this.x = x
+        this.y = y
+        this.width = width
+        this.height = height
+    }
+}
+
+class Pixel {
     constructor(x, y, color) {
         this.x = x
         this.y = y
@@ -41,6 +60,10 @@ class Vector {
     constructor(x, y) {
         this.x = x
         this.y = y
+    }
+
+    add(vector) {
+        return new Vector(this.x + vector.x, this.y + vector.y)
     }
 
     toWorld() {
@@ -55,30 +78,21 @@ class Vector {
         return new Vector(Math.floor(this.x / size) * size, Math.floor(this.y / size) * size)
     }
 
-    static screenToWorld(screenX, screenY) {
-        let posX = screenX - canvas.offsetLeft
-        let posY = screenY - canvas.offsetTop
-        let x = posX / scale + translateX
-        let y = posY / scale + translateY
-        return new Vector(x, y)
-    }
-
-    static worldToGrid(x, y) {
-        return new Vector(Math.floor(x / size) * size, Math.floor(y / size) * size)
+    magnitude(){
+        return Math.sqrt((this.x)**2+(this.y)**2)
     }
 }
 
 let rectangles = []
 
-canvas.addEventListener('click', mouseClicked)
+canvasInterface.addEventListener('click', mouseClicked)
 window.addEventListener('wheel', scroll)
-canvas.addEventListener('mousemove', moveCanvas)
+canvasInterface.addEventListener('mousemove', moveCanvas)
 
 
 function mouseClicked(e) {
-    if (!moved) {
-        let click = new Vector(e.x, e.y);
-        click.toWorld().toGrid()
+    if (startDrag == null) {
+        let click = (new Vector(e.x, e.y)).toWorld().toGrid()
 
         if (click.x >= 0 && click.x < ctx.canvas.width &&
             click.y >= 0 && click.y < ctx.canvas.height
@@ -86,9 +100,10 @@ function mouseClicked(e) {
             ctx.fillStyle = actualColor
             socket.emit("change", click.x, click.y, actualColor)
             ctx.fillRect(click.x, click.y, size, size)
-            rectangles.push(new Rectangle(click.x, click.y, actualColor))
+            rectangles.push(new Pixel(click.x, click.y, actualColor))
         }
     }
+    startDrag = null
 }
 
 function changeColor(color) {
@@ -116,15 +131,35 @@ function scroll(e) {
 }
 
 function moveCanvas(e) {
-    if (e.buttons === 0) return moved = false;
+    highlight = new Vector(e.x, e.y).toWorld().toGrid()
+    let world = canvasToWorld()
+    ctxInterface.clearRect(world.x - size, world.y - size, world.width + size, world.height + size)
+    ctxInterface.globalAlpha = 0.8
+    ctxInterface.lineWidth = 1
+    ctxInterface.strokeStyle = "#808080"
+    ctxInterface.fillStyle = actualColor
+    ctxInterface.fillRect(highlight.x+ctxInterface.lineWidth/2, highlight.y+ctxInterface.lineWidth/2,
+        size-ctxInterface.lineWidth, size-ctxInterface.lineWidth
+    )
+    ctxInterface.strokeRect(highlight.x, highlight.y, size, size)
+
+    if (e.buttons === 0) {
+        startDrag = null
+        return;
+    }
 //corriger l'affichage: il manque des bouts?
-    if (translateX - e.movementX / scale > -10 && translateX - e.movementX / scale < ctx.canvas.width * (1 - 1 / scale) + 50 && translateY - e.movementY / scale > -10 && translateY - e.movementY / scale < ctx.canvas.height * (1 - 1 / scale) + 50) {
+    if (startDrag == null)
+        startDrag = new Vector(e.x, e.y)
+    if (translateX - e.movementX / scale > -10 && translateX - e.movementX / scale < ctx.canvas.width * (1 - 1 / scale) + 10 &&
+        translateY - e.movementY / scale > -10 && translateY - e.movementY / scale < ctx.canvas.height * (1 - 1 / scale) + 10 &&
+        startDrag.add(new Vector(-e.x, -e.y)).magnitude() > 10
+    ) {
         translateX -= e.movementX / scale
         translateY -= e.movementY / scale
         updateTransform()
         draw()
     }
-    moved = true
+
 
 }
 
@@ -139,29 +174,35 @@ function draw() {
             ctx.fillRect(rectangle.x, rectangle.y, size, size)
         }
     }
+
 }
 
 function updateTransform() {
     ctx.setTransform(scale, 0, 0, scale, -translateX * scale, -translateY * scale)
+    ctxInterface.setTransform(scale, 0, 0, scale, -translateX * scale, -translateY * scale)
 }
 
 function canvasToWorld() {
-    return {
-        x: translateX, y: translateY,
-        width: ctx.canvas.width / scale, height: ctx.canvas.height / scale
-    }
+    return new Rectangle(
+        translateX, translateY,
+        ctx.canvas.width / scale, ctx.canvas.height / scale
+    )
 }
 
-socket.on("update", (data)=>{
+socket.on("update", (data) => {
 
 })
 
+resizeCanvas()
+updateTransform()
 
 for (let i = 0; i < 380; i++) {
     for (let j = 0; j < 200; j++) {
-        rectangles.push(new Rectangle(i * size, j * size, actualColor))
+        rectangles.push(new Pixel(i * size, j * size, actualColor))
     }
 }
 
-resizeCanvas()
+draw()
+
+
 
