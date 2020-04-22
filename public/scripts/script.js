@@ -18,7 +18,7 @@ let translateX = 0
 let translateY = 0
 
 ctx.lineWidth = 2
-let actualcolor = "black"
+let actualColor = "black"
 let moved = false
 
 class Rectangle {
@@ -67,15 +67,15 @@ function mouseClicked(e){
     if(x >= 0 && x < ctx.canvas.width &&
       y >= 0 && y < ctx.canvas.height 
     ){
-      ctx.fillStyle = actualcolor
+      ctx.fillStyle = actualColor
       ctx.fillRect(x, y, size, size)
-      rectangles.push(new Rectangle(x, y, actualcolor))
+      rectangles.push(new Rectangle(x, y, actualColor))
     }
   }
 }
 
 function changeColor(color){
-  actualcolor = color
+  actualColor = color
 }
 
 function scroll(e){
@@ -148,7 +148,7 @@ function canvasToWorld(){
 
 for(let i = 0; i < 380; i++){
   for(let j = 0; j < 200; j++){
-    rectangles.push(new Rectangle(i*size, j*size, actualcolor))
+    rectangles.push(new Rectangle(i*size, j*size, actualColor))
   }
 }
 

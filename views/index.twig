@@ -1,6 +1,18 @@
 {% extends 'layout.twig' %}
 
 {% block body %}
-  <h1>{{title}}</h1>
-  <p>Welcome to {{title}}</p>
+  <button style="background-color:black;left:0px;" onclick=changeColor("black")></button>
+
+  <button style="background-color:white;left:40px;" onclick=changeColor("white")></button>
+
+  <button style="background-color:red;left:80px;" onclick=changeColor("red")></button>
+
+  <button style="background-color:blue;left:120px;" onclick=changeColor("blue")></button>
+
+  <button style="background-color:green;left:160px;" onclick=changeColor("green")></button>
+
+  <button style="background-color:yellow;left:200px;" onclick=changeColor("yellow")></button>
+
+  <canvas id="drawing" width="1920" height="1080"></canvas>
+  <script src="/scripts/script.js"></script>
 {% endblock %}
