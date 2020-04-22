@@ -12,6 +12,7 @@
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
     "node-sass-middleware": "0.11.0",
+    "socket.io": "^2.3.0",
     "twig": "~0.10.3"
   }
 }

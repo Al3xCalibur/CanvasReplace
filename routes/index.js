@@ -5,5 +5,17 @@ var router = express.Router();
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
+/**
+ * @param {Server} io
+ * @returns {Router}
+ */
+module.exports = function(io){
 
-module.exports = router;
+  io.on('connection', (socket) => {
+    socket.on('change', (x, y, color) => {
+      console.log(x, y, color)
+    })
+  })
+
+  return router
+}
