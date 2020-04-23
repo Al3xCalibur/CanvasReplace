@@ -7,8 +7,25 @@ const ctx = canvas.getContext('2d')
 const ctxInterface = canvasInterface.getContext('2d')
 
 const size = 5
-const width = ctx.canvas.width
-const height = ctx.canvas.height
+let width
+let height
+
+socket.on("updateAll", (widthReceived, heightReceived) => {
+    resizeCanvas()
+    updateTransform()
+
+    width = widthReceived
+    height = heightReceived
+//    rectangles = rectanglesReceived
+
+    for (let i = 0; i < width/size; i++) {
+        for (let j = 0; j < height/size; j++) {
+            rectangles.push(new Pixel(i * size, j * size, "white"))
+        }
+    }
+    draw()
+
+})
 
 window.mobileCheck = function () {
     let check = false;
@@ -81,16 +98,6 @@ class Vector {
         return new Vector(Math.floor(this.x / size) * size, Math.floor(this.y / size) * size)
     }
 
-    isInWorld() {
-        let world = canvasToWorld()
-        let worldized = this.toWorld()
-        if (worldized.x >= world.x - size && worldized.x <= world.x + world.width &&
-            worldized.y >= world.y - size && worldized.y <= world.y + world.height) {
-            return true
-        }
-        return false
-    }
-
     magnitude(){
         return Math.sqrt((this.x)**2+(this.y)**2)
     }
@@ -158,7 +165,7 @@ function drawHint(e) {
     ctxInterface.strokeRect(highlight.x, highlight.y, size, size)
 }
 
-function moveCanvas(e) {
+function moveCanvas(e) {    //legers pb avec startDrag : on dessine pas toujours en cliquant
     drawHint(e)
 
     if (e.buttons === 0 ) {
@@ -207,17 +214,4 @@ function canvasToWorld() {
 socket.on("update", (data) => {
 
 })
-
-resizeCanvas()
-updateTransform()
-
-for (let i = 0; i < width/size; i++) {
-    for (let j = 0; j < height/size; j++) {
-        rectangles.push(new Pixel(i * size, j * size, "white"))
-    }
-}
-
-draw()
-
-
 
