@@ -1,5 +1,7 @@
-var express = require('express');
-var router = express.Router();
+let express = require('express');
+let router = express.Router();
+
+let database = require("../database")
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -12,7 +14,13 @@ router.get('/', function(req, res, next) {
 module.exports = function(io){
 
   io.on('connection', (socket) => {
-    socket.emit("updateAll", "?")
+    database.all().then(
+        (value) => {
+          socket.emit("updateAll", value)
+        },
+        console.log
+    )
+
 
     socket.on('change', (x, y, color) => {
       console.log(x, y, color)
