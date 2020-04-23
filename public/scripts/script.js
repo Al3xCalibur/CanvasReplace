@@ -7,6 +7,8 @@ const ctx = canvas.getContext('2d')
 const ctxInterface = canvasInterface.getContext('2d')
 
 const size = 5
+const width = ctx.canvas.width
+const height = ctx.canvas.height
 
 window.mobileCheck = function () {
     let check = false;
@@ -18,8 +20,8 @@ window.mobileCheck = function () {
 window.addEventListener('resize', resizeCanvas, false);
 
 function resizeCanvas() {
-    // canvas.width = window.innerWidth;
-    // canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
     canvasInterface.width = window.innerWidth;
     canvasInterface.height = window.innerHeight;
 
@@ -105,8 +107,8 @@ function mouseClicked(e) {
     if (startDrag == null) {
         let click = (new Vector(e.x, e.y)).toWorld().toGrid()
 
-        if (click.x >= 0 && click.x < ctx.canvas.width &&
-            click.y >= 0 && click.y < ctx.canvas.height
+        if (click.x >= 0 && click.x < width &&
+            click.y >= 0 && click.y < height
         ) {
             ctx.fillStyle = actualColor
             socket.emit("change", click.x, click.y, actualColor)
@@ -132,10 +134,10 @@ function scroll(e) {
 
         translateX -= x * (1 / scale - 1 / previous)
         translateY -= y * (1 / scale - 1 / previous)
-        if (translateX < -ctx.canvas.width*showPercent) translateX = -ctx.canvas.width*showPercent
-        if (translateX > ctx.canvas.width*(1-showPercent)) translateX = ctx.canvas.width*(1-showPercent)
-        if (translateY > ctx.canvas.height*(1-showPercent)) translateY = ctx.canvas.height*(1-showPercent)
-        if (translateY < -ctx.canvas.height*showPercent) translateY = -ctx.canvas.height*showPercent
+        if (translateX < -width*showPercent) translateX = -width*showPercent
+        if (translateX > width*(1-showPercent)) translateX = width*(1-showPercent)
+        if (translateY > height*(1-showPercent)) translateY = height*(1-showPercent)
+        if (translateY < -height*showPercent) translateY = -height*showPercent
         updateTransform()
         draw()
         drawHint(e)
@@ -165,8 +167,8 @@ function moveCanvas(e) {
     }
 
     if (startDrag == null)  return startDrag = new Vector(e.x, e.y)
-    if ( translateX - e.movementX / scale > -ctx.canvas.width/scale*showPercent && translateX - e.movementX / scale < ctx.canvas.width*(1+1/scale*showPercent)-ctxInterface.canvas.width/scale &&
-        translateY - e.movementY / scale > -ctx.canvas.width/scale*showPercent && translateY - e.movementY / scale < ctx.canvas.height*(1+1/scale*showPercent)-ctxInterface.canvas.height/scale &&
+    if ( translateX - e.movementX / scale > -width/scale*showPercent && translateX - e.movementX / scale < width*(1+1/scale*showPercent)-ctx.canvas.width/scale &&
+        translateY - e.movementY / scale > -width/scale*showPercent && translateY - e.movementY / scale < height*(1+1/scale*showPercent)-ctx.canvas.height/scale &&
         startDrag.add(new Vector(-e.x, -e.y)).magnitude() > 10
     ){
         translateX -= e.movementX / scale
@@ -209,8 +211,8 @@ socket.on("update", (data) => {
 resizeCanvas()
 updateTransform()
 
-for (let i = 0; i < ctx.canvas.width/size; i++) {
-    for (let j = 0; j < ctx.canvas.height/size; j++) {
+for (let i = 0; i < width/size; i++) {
+    for (let j = 0; j < height/size; j++) {
         rectangles.push(new Pixel(i * size, j * size, "white"))
     }
 }
