@@ -18,8 +18,8 @@ window.mobileCheck = function () {
 window.addEventListener('resize', resizeCanvas, false);
 
 function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    // canvas.width = window.innerWidth;
+    // canvas.height = window.innerHeight;
     canvasInterface.width = window.innerWidth;
     canvasInterface.height = window.innerHeight;
 
@@ -32,6 +32,7 @@ function resizeCanvas() {
 let scale = 2
 let translateX = 0
 let translateY = 0
+let showPercent = 1/8
 
 ctx.lineWidth = 2
 let actualColor = "black"
@@ -78,6 +79,16 @@ class Vector {
         return new Vector(Math.floor(this.x / size) * size, Math.floor(this.y / size) * size)
     }
 
+    isInWorld() {
+        let world = canvasToWorld()
+        let worldized = this.toWorld()
+        if (worldized.x >= world.x - size && worldized.x <= world.x + world.width &&
+            worldized.y >= world.y - size && worldized.y <= world.y + world.height) {
+            return true
+        }
+        return false
+    }
+
     magnitude(){
         return Math.sqrt((this.x)**2+(this.y)**2)
     }
@@ -94,9 +105,7 @@ function mouseClicked(e) {
     if (startDrag == null) {
         let click = (new Vector(e.x, e.y)).toWorld().toGrid()
 
-        if (click.x >= 0 && click.x < ctx.canvas.width &&
-            click.y >= 0 && click.y < ctx.canvas.height
-        ) {
+        if (click.isInWorld()) {
             ctx.fillStyle = actualColor
             socket.emit("change", click.x, click.y, actualColor)
             ctx.fillRect(click.x, click.y, size, size)
@@ -121,10 +130,10 @@ function scroll(e) {
 
         translateX -= x * (1 / scale - 1 / previous)
         translateY -= y * (1 / scale - 1 / previous)
-        if (translateX < 0) translateX = 0
-        if (translateX > ctx.canvas.width) translateX = ctx.canvas.width
-        if (translateY > ctx.canvas.height) translateY = ctx.canvas.height
-        if (translateY < 0) translateY = 0
+        if (translateX < ctx.canvas.width*showPercent) translateX = 0
+        if (translateX > ctx.canvas.width*(1-showPercent)) translateX = ctx.canvas.width
+        if (translateY > ctx.canvas.height*(1-showPercent)) translateY = ctx.canvas.height
+        if (translateY < ctx.canvas.height*showPercent) translateY = 0
         updateTransform()
         draw()
     }
@@ -143,33 +152,27 @@ function moveCanvas(e) {
     )
     ctxInterface.strokeRect(highlight.x, highlight.y, size, size)
 
-    if (e.buttons === 0) {
+    if (e.buttons === 0 ) {
         startDrag = null
         return;
     }
-//corriger l'affichage: il manque des bouts?
-    if (startDrag == null)
-        startDrag = new Vector(e.x, e.y)
-    if (translateX - e.movementX / scale > -10 && translateX - e.movementX / scale < ctx.canvas.width * (1 - 1 / scale) + 10 &&
-        translateY - e.movementY / scale > -10 && translateY - e.movementY / scale < ctx.canvas.height * (1 - 1 / scale) + 10 &&
-        startDrag.add(new Vector(-e.x, -e.y)).magnitude() > 10
-    ) {
+
+    if (startDrag == null)  return startDrag = new Vector(e.x, e.y)
+    if ( translateX - e.movementX / scale > -ctx.canvas.width/scale*showPercent && translateX - e.movementX / scale < ctx.canvas.width*(1+1/scale*showPercent)-ctxInterface.canvas.width/scale &&
+        translateY - e.movementY / scale > -ctx.canvas.width/scale*showPercent && translateY - e.movementY / scale < ctx.canvas.height*(1+1/scale*showPercent)-ctxInterface.canvas.height/scale
+    ){
         translateX -= e.movementX / scale
         translateY -= e.movementY / scale
         updateTransform()
         draw()
     }
-
-
 }
 
 function draw() {
     let world = canvasToWorld()
     ctx.clearRect(world.x - size, world.y - size, world.width + size, world.height + size)
     for (let rectangle of rectangles) {
-        if (rectangle.x >= world.x - size && rectangle.x <= world.x + world.width &&
-            rectangle.y >= world.y - size && rectangle.y <= world.y + world.height
-        ) {
+        if (rectangle.isInWorld()) {
             ctx.fillStyle = rectangle.color
             ctx.fillRect(rectangle.x, rectangle.y, size, size)
         }
@@ -189,6 +192,7 @@ function canvasToWorld() {
     )
 }
 
+
 socket.on("update", (data) => {
 
 })
@@ -196,9 +200,9 @@ socket.on("update", (data) => {
 resizeCanvas()
 updateTransform()
 
-for (let i = 0; i < 380; i++) {
-    for (let j = 0; j < 200; j++) {
-        rectangles.push(new Pixel(i * size, j * size, actualColor))
+for (let i = 0; i < ctx.canvas.width/size; i++) {
+    for (let j = 0; j < ctx.canvas.height/size; j++) {
+        rectangles.push(new Pixel(i * size, j * size, "white"))
     }
 }
 

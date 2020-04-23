@@ -1,20 +1,19 @@
 {% extends 'layout.twig' %}
 
+{% set colors = ['black', 'white', 'red', 'blue', 'yellow', 'green'] %}
+{% set width = 1920 %}
+{% set height = 1080 %}
+
 {% block body %}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
-  <button style="background-color:black;left:20px;border: 1px solid white" onclick=changeColor("black")></button>
 
-  <button style="background-color:white;left:60px;" onclick=changeColor("white")></button>
+  {% for color in colors %}
 
-  <button style="background-color:red;left:100px;" onclick=changeColor("red")></button>
+    <button style="background-color:{{ color }};left:{{ 20 + 40 * loop.index }}px" onclick=changeColor("{{ color }}")></button>
 
-  <button style="background-color:blue;left:140px;" onclick=changeColor("blue")></button>
+  {% endfor %}
 
-  <button style="background-color:green;left:180px;" onclick=changeColor("green")></button>
-
-  <button style="background-color:yellow;left:220px;" onclick=changeColor("yellow")></button>
-
-  <canvas id="interface" width="1920" height="1080" style="z-index: 1;"></canvas>
-  <canvas id="drawing" width="1920" height="1080" style="z-index: 0;"></canvas>
+  <canvas id="interface" width="{{ width }}" height="{{ height }}" style="z-index: 1;"></canvas>
+  <canvas id="drawing" width="{{ width }}" height="{{ height }}" style="z-index: 0;"></canvas>
   <script src="/scripts/script.js"></script>
 {% endblock %}
