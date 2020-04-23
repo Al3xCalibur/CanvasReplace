@@ -12,9 +12,12 @@ router.get('/', function(req, res, next) {
 module.exports = function(io){
 
   io.on('connection', (socket) => {
+    socket.emit("updateAll", "?")
+
     socket.on('change', (x, y, color) => {
       console.log(x, y, color)
     })
+
   })
 
   return router

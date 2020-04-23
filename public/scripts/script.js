@@ -193,6 +193,11 @@ function canvasToWorld() {
 }
 
 
+
+socket.on("updateAll", (data) => {
+
+})
+
 socket.on("update", (data) => {
 
 })
