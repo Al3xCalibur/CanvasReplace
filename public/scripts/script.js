@@ -98,8 +98,13 @@ class Vector {
         return new Vector(Math.floor(this.x / size) * size, Math.floor(this.y / size) * size)
     }
 
-    magnitude(){
-        return Math.sqrt((this.x)**2+(this.y)**2)
+
+    toNormalizedGrid() {
+        return new Vector(Math.floor(this.x / size), Math.floor(this.y / size))
+    }
+
+    magnitude() {
+        return Math.sqrt((this.x) ** 2 + (this.y) ** 2)
     }
 }
 
@@ -113,15 +118,15 @@ canvasInterface.addEventListener('mousemove', moveCanvas)
 
 function mouseClicked(e) {
     if (startDrag == null) {
-        let click = (new Vector(e.x, e.y)).toWorld().toGrid()
+        let click = (new Vector(e.x, e.y)).toWorld().toNormalizedGrid()
 
         if (click.x >= 0 && click.x < width &&
             click.y >= 0 && click.y < height
         ) {
             ctx.fillStyle = actualColor
             socket.emit("change", click.x, click.y, actualColor)
-            ctx.fillRect(click.x, click.y, size, size)
-            pixels.push(new Pixel(click.x, click.y, actualColor))
+            ctx.fillRect(click.x*size, click.y*size, size, size)
+            pixels[click.y][click.x] = actualColor
         }
     }
     startDrag = null
@@ -191,10 +196,10 @@ function draw() {
     ctx.clearRect(world.x - size, world.y - size, world.width + size, world.height + size)
     for (let i = 0; i < pixels.length; i++) {
         for (let j = 0; j < pixels[i].length; j++) {
-            if (rectangle.x >= world.x - size && rectangle.x <= world.x + world.width &&
-                rectangle.y >= world.y - size && rectangle.y <= world.y + world.height) {
-                ctx.fillStyle = rectangle.color
-                ctx.fillRect(rectangle.x, rectangle.y, size, size)
+            if (j >= (world.x - size)/size && j <= (world.x + world.width)/size &&
+                i >= (world.y - size)/size && i <= (world.y + world.height)/size) {
+                ctx.fillStyle = pixels[i][j]
+                ctx.fillRect(j*size, i*size, size, size)
             }
         }
     }
@@ -215,17 +220,28 @@ function canvasToWorld() {
 
 
 socket.on("updateAll", (data) => {
-    for (let i = 0; i < 1080; i++) {
-        pixels[i] = new Array(1920);
+    for (let i = 0; i < 216; i++) {
+        pixels[i] = new Array(384);
+    }
+
+    resizeCanvas()
+    updateTransform()
+
+    for(let i=0; i<216; i++) {
+        pixels[i] = [];
+        for(let j=0; j<384; j++) {
+            pixels[i][j] = "white";
+        }
     }
     for (pixel of data) {
         pixels[pixel.y][pixel.x] = pixel.color
     }
+
     draw()
+
 
 })
 
 socket.on("update", (data) => {
 
 })
-
