@@ -10,23 +10,6 @@ const size = 5
 let width
 let height
 
-socket.on("updateAll", (widthReceived, heightReceived) => {
-    resizeCanvas()
-    updateTransform()
-
-    width = widthReceived
-    height = heightReceived
-//    rectangles = rectanglesReceived
-
-    for (let i = 0; i < width/size; i++) {
-        for (let j = 0; j < height/size; j++) {
-            rectangles.push(new Pixel(i * size, j * size, "white"))
-        }
-    }
-    draw()
-
-})
-
 window.mobileCheck = function () {
     let check = false;
     (function (a) {
@@ -123,10 +106,7 @@ function mouseClicked(e) {
         if (click.x >= 0 && click.x < width &&
             click.y >= 0 && click.y < height
         ) {
-            ctx.fillStyle = actualColor
             socket.emit("change", click.x, click.y, actualColor)
-            ctx.fillRect(click.x*size, click.y*size, size, size)
-            pixels[click.y][click.x] = actualColor
         }
     }
     startDrag = null
@@ -147,10 +127,10 @@ function scroll(e) {
 
         translateX -= x * (1 / scale - 1 / previous)
         translateY -= y * (1 / scale - 1 / previous)
-        if (translateX < -width * showPercent) translateX = -width * showPercent
-        if (translateX > width * (1 - showPercent)) translateX = width * (1 - showPercent)
-        if (translateY > height * (1 - showPercent)) translateY = height * (1 - showPercent)
-        if (translateY < -height * showPercent) translateY = -height * showPercent
+        if (translateX < -width * size * showPercent) translateX = -width * size * showPercent
+        if (translateX > width * size * (1 - showPercent)) translateX = width * size * (1 - showPercent)
+        if (translateY > height * size * (1 - showPercent)) translateY = height * size * (1 - showPercent)
+        if (translateY < -height * size * showPercent) translateY = -height * size * showPercent
         updateTransform()
         draw()
         drawHint(e)
@@ -180,8 +160,8 @@ function moveCanvas(e) {    //legers pb avec startDrag : on dessine pas toujours
     }
 
     if (startDrag == null) return startDrag = new Vector(e.x, e.y)
-    if (translateX - e.movementX / scale > -width / scale * showPercent && translateX - e.movementX / scale < width * (1 + 1 / scale * showPercent) - ctx.canvas.width / scale &&
-        translateY - e.movementY / scale > -width / scale * showPercent && translateY - e.movementY / scale < height * (1 + 1 / scale * showPercent) - ctx.canvas.height / scale &&
+    if (translateX - e.movementX / scale > -width * size / scale * showPercent && translateX - e.movementX / scale < width * size * (1 + 1 / scale * showPercent) - ctx.canvas.width / scale &&
+        translateY - e.movementY / scale > -width * size / scale * showPercent && translateY - e.movementY / scale < height * size * (1 + 1 / scale * showPercent) - ctx.canvas.height / scale &&
         startDrag.add(new Vector(-e.x, -e.y)).magnitude() > 10
     ) {
         translateX -= e.movementX / scale
@@ -219,18 +199,17 @@ function canvasToWorld() {
 }
 
 
-socket.on("updateAll", (data) => {
-    for (let i = 0; i < 216; i++) {
-        pixels[i] = new Array(384);
-    }
+socket.on("updateAll", (widthReceived, heightReceived, data) => {
+    width = widthReceived
+    height = heightReceived
 
     resizeCanvas()
     updateTransform()
 
-    for(let i=0; i<216; i++) {
-        pixels[i] = [];
-        for(let j=0; j<384; j++) {
-            pixels[i][j] = "white";
+    for(let i=0; i<height; i++) {
+        pixels[i] = []
+        for(let j=0; j<width; j++) {
+            pixels[i][j] = "white"
         }
     }
     for (pixel of data) {
@@ -242,6 +221,7 @@ socket.on("updateAll", (data) => {
 
 })
 
-socket.on("update", (data) => {
-
+socket.on("update", (x, y, color) => {
+    pixels[y][x] = color
+    draw()
 })
