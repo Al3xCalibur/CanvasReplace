@@ -4,6 +4,7 @@
   "private": true,
   "main": "./bin/www",
   "scripts": {
+    "database": "cat database.sql | sqlite3 database.db",
     "start": "node ./bin/www"
   },
   "dependencies": {
