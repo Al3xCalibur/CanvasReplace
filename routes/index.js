@@ -1,5 +1,7 @@
-var express = require('express');
-var router = express.Router();
+let express = require('express');
+let router = express.Router();
+
+let database = require("../database")
 
 const width = 1920
 const height = 1080
@@ -15,7 +17,12 @@ router.get('/', function(req, res, next) {
 module.exports = function(io){
 
   io.on('connection', (socket) => {
-    socket.emit('updateAll', width, height)
+    database.all().then(
+        (value) => {
+          socket.emit("updateAll", value)
+        },
+        console.log
+    )
 
     socket.on('change', (x, y, color) => {
       console.log(x, y, color)

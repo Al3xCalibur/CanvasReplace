@@ -98,8 +98,23 @@ class Vector {
         return new Vector(Math.floor(this.x / size) * size, Math.floor(this.y / size) * size)
     }
 
+<<<<<<< HEAD
     magnitude(){
         return Math.sqrt((this.x)**2+(this.y)**2)
+=======
+    isInWorld() {
+        let world = canvasToWorld()
+        let worldized = this.toWorld()
+        if (worldized.x >= world.x - size && worldized.x <= world.x + world.width &&
+            worldized.y >= world.y - size && worldized.y <= world.y + world.height) {
+            return true
+        }
+        return false
+    }
+
+    magnitude() {
+        return Math.sqrt((this.x) ** 2 + (this.y) ** 2)
+>>>>>>> 929a6078ce5bda9c3160c3d43653fd030701173e
     }
 }
 
@@ -229,3 +244,19 @@ socket.on("update", (data) => {
 
 })
 
+<<<<<<< HEAD
+=======
+resizeCanvas()
+updateTransform()
+
+for (let i = 0; i < width / size; i++) {
+    for (let j = 0; j < height / size; j++) {
+        pixels[j][i] = "white"
+    }
+}
+
+draw()
+
+
+
+>>>>>>> 929a6078ce5bda9c3160c3d43653fd030701173e

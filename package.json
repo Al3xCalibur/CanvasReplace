@@ -4,6 +4,7 @@
   "private": true,
   "main": "./bin/www",
   "scripts": {
+    "create-database": "cat database.sql | sqlite3 database.db",
     "start": "node ./bin/www"
   },
   "dependencies": {
@@ -14,6 +15,7 @@
     "morgan": "~1.9.1",
     "node-sass-middleware": "0.11.0",
     "socket.io": "^2.3.0",
+    "sqlite3": "^4.1.1",
     "twig": "~0.10.3"
   }
 }
