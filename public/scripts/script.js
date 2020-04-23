@@ -105,7 +105,9 @@ function mouseClicked(e) {
     if (startDrag == null) {
         let click = (new Vector(e.x, e.y)).toWorld().toGrid()
 
-        if (click.isInWorld()) {
+        if (click.x >= 0 && click.x < ctx.canvas.width &&
+            click.y >= 0 && click.y < ctx.canvas.height
+        ) {
             ctx.fillStyle = actualColor
             socket.emit("change", click.x, click.y, actualColor)
             ctx.fillRect(click.x, click.y, size, size)
@@ -130,16 +132,17 @@ function scroll(e) {
 
         translateX -= x * (1 / scale - 1 / previous)
         translateY -= y * (1 / scale - 1 / previous)
-        if (translateX < ctx.canvas.width*showPercent) translateX = 0
-        if (translateX > ctx.canvas.width*(1-showPercent)) translateX = ctx.canvas.width
-        if (translateY > ctx.canvas.height*(1-showPercent)) translateY = ctx.canvas.height
-        if (translateY < ctx.canvas.height*showPercent) translateY = 0
+        if (translateX < -ctx.canvas.width*showPercent) translateX = -ctx.canvas.width*showPercent
+        if (translateX > ctx.canvas.width*(1-showPercent)) translateX = ctx.canvas.width*(1-showPercent)
+        if (translateY > ctx.canvas.height*(1-showPercent)) translateY = ctx.canvas.height*(1-showPercent)
+        if (translateY < -ctx.canvas.height*showPercent) translateY = -ctx.canvas.height*showPercent
         updateTransform()
         draw()
+        drawHint(e)
     }
 }
 
-function moveCanvas(e) {
+function drawHint(e) {
     highlight = new Vector(e.x, e.y).toWorld().toGrid()
     let world = canvasToWorld()
     ctxInterface.clearRect(world.x - size, world.y - size, world.width + size, world.height + size)
@@ -151,6 +154,10 @@ function moveCanvas(e) {
         size-ctxInterface.lineWidth, size-ctxInterface.lineWidth
     )
     ctxInterface.strokeRect(highlight.x, highlight.y, size, size)
+}
+
+function moveCanvas(e) {
+    drawHint(e)
 
     if (e.buttons === 0 ) {
         startDrag = null
@@ -159,7 +166,8 @@ function moveCanvas(e) {
 
     if (startDrag == null)  return startDrag = new Vector(e.x, e.y)
     if ( translateX - e.movementX / scale > -ctx.canvas.width/scale*showPercent && translateX - e.movementX / scale < ctx.canvas.width*(1+1/scale*showPercent)-ctxInterface.canvas.width/scale &&
-        translateY - e.movementY / scale > -ctx.canvas.width/scale*showPercent && translateY - e.movementY / scale < ctx.canvas.height*(1+1/scale*showPercent)-ctxInterface.canvas.height/scale
+        translateY - e.movementY / scale > -ctx.canvas.width/scale*showPercent && translateY - e.movementY / scale < ctx.canvas.height*(1+1/scale*showPercent)-ctxInterface.canvas.height/scale &&
+        startDrag.add(new Vector(-e.x, -e.y)).magnitude() > 10
     ){
         translateX -= e.movementX / scale
         translateY -= e.movementY / scale
@@ -172,7 +180,8 @@ function draw() {
     let world = canvasToWorld()
     ctx.clearRect(world.x - size, world.y - size, world.width + size, world.height + size)
     for (let rectangle of rectangles) {
-        if (rectangle.isInWorld()) {
+        if (rectangle.x >= world.x - size && rectangle.x <= world.x + world.width &&
+            rectangle.y >= world.y - size && rectangle.y <= world.y + world.height) {
             ctx.fillStyle = rectangle.color
             ctx.fillRect(rectangle.x, rectangle.y, size, size)
         }
