@@ -1,4 +1,6 @@
 const socket = io(window.location.origin)
+const title = document.querySelector('title')
+const titleText = title.innerText
 
 const canvas = document.getElementById('drawing')
 const canvasInterface = document.getElementById('interface')
@@ -24,6 +26,7 @@ window.mobileCheck = function () {
     return check;
 }
 window.addEventListener('resize', resizeCanvas, false);
+
 function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -171,7 +174,7 @@ function moveCanvas(e) {    //legers pb avec startDrag : on dessine pas toujours
 function draw() {
     let world = canvasToWorld()
     ctx.clearRect(world.x - size, world.y - size, world.width + size, world.height + size)
-    ctx.drawImage(image, 0, 0, size*image.width, size*image.height)
+    ctx.drawImage(image, 0, 0, size * image.width, size * image.height)
 }
 
 function updateTransform() {
@@ -224,20 +227,23 @@ socket.on("updateYou", (x, y, color) => {
     draw()
 })
 
-function setTimer(seconds){
-    if(interval != null)
+function setTimer(seconds) {
+    if (interval != null)
         clearInterval(interval)
     timerTime = seconds
-    timer.innerText = timerTime+" seconds"
+    timer.innerText = timerTime + " seconds"
+    title.innerText = timerTime +"s | " + titleText
     timer.style.visibility = 'visible'
-    interval = setInterval(()=> {
+    interval = setInterval(() => {
         timerTime--
 
-        if(timerTime === 0){
+        if (timerTime === 0) {
             clearInterval(interval)
             timer.style.visibility = 'hidden'
+            title.innerText = titleText
         } else {
-            timer.innerText = timerTime+" seconds"
+            timer.innerText = timerTime + " seconds"
+            title.innerText = timerTime +"s | " + titleText
         }
     }, 1000)
 }
