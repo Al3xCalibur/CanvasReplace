@@ -6,6 +6,7 @@ const canvas = document.getElementById('drawing')
 const canvasInterface = document.getElementById('interface')
 const image = document.getElementById('image')
 
+const people = document.getElementById('people')
 const position = document.getElementById('position')
 
 const timer = document.getElementById('timer')
@@ -229,6 +230,10 @@ socket.on("updateYou", (x, y, color) => {
     ctxImage.fillRect(x, y, 1, 1)
     setTimer(5)
     draw()
+})
+
+socket.on("people", (number) => {
+    people.innerText = number + " connectés"
 })
 
 function setTimer(seconds) {

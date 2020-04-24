@@ -18,6 +18,7 @@ module.exports = function (io) {
 
     io.on('connection', (socket) => {
         socket.lastUpdate = Date.now()
+        io.emit("people", Object.keys(io.sockets.connected).length)
         database.all().then(
             (value) => {
                 socket.emit("updateAll", width, height, value)
@@ -39,6 +40,10 @@ module.exports = function (io) {
                     console.log
                 )
             }
+        })
+
+        socket.on('disconnect', () => {
+            io.emit('people', Object.keys(io.sockets.connected).length)
         })
 
     })
