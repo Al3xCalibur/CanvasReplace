@@ -97,14 +97,13 @@ class Vector {
     }
 }
 
-
 canvasInterface.addEventListener('click', mouseClicked)
 window.addEventListener('wheel', scroll)
 canvasInterface.addEventListener('mousemove', moveCanvas)
 
 
 function mouseClicked(e) {
-    if (startDrag == null) {
+    if ((window.mobileCheck() && e.touches.length === 1 && startDrag == null ) || startDrag == null) {
         let click = (new Vector(e.x, e.y)).toWorld().toNormalizedGrid()
 
         if (click.x >= 0 && click.x < width &&
@@ -120,10 +119,13 @@ function changeColor(color) {
     actualColor = color
 }
 
+
+
 function scroll(e) {
     e.preventDefault()
+
     let relativeScale = 1 - e.deltaY * 0.01
-    if (scale * relativeScale >= 1 && scale * relativeScale <= 10) {
+    if (scale * relativeScale >= 0.70 && scale * relativeScale <= 10) {
         let x = e.x - canvas.offsetLeft, y = e.y - canvas.offsetTop
 
         let previous = scale
@@ -131,10 +133,14 @@ function scroll(e) {
 
         translateX -= x * (1 / scale - 1 / previous)
         translateY -= y * (1 / scale - 1 / previous)
-        if (translateX < -width * size * showPercent) translateX = -width * size * showPercent
-        if (translateX > width * size * (1 - showPercent)) translateX = width * size * (1 - showPercent)
-        if (translateY > height * size * (1 - showPercent)) translateY = height * size * (1 - showPercent)
-        if (translateY < -height * size * showPercent) translateY = -height * size * showPercent
+
+        let min_propor = size * showPercent / scale
+        let max_propor = size * (1 - showPercent) / scale
+
+        if (translateX < -width * min_propor) translateX = -width * min_propor
+        if (translateX > width * max_propor) translateX = width * max_propor
+        if (translateY > height * max_propor) translateY = height * max_propor
+        if (translateY < -height * min_propor) translateY = -height * min_propor
         updateTransform()
         draw()
         drawHint(e)
@@ -159,12 +165,13 @@ function drawHint(e) {
 function moveCanvas(e) {    //legers pb avec startDrag : on dessine pas toujours en cliquant
     drawHint(e)
 
-    if (e.buttons === 0) {
+    if ((window.mobileCheck() && e.touches.length > 1 && e.buttons === 0 ) || e.buttons === 0) {
         startDrag = null
         return;
     }
 
     if (startDrag == null) return startDrag = new Vector(e.x, e.y)
+
     if (translateX - e.movementX / scale > -width * size / scale * showPercent && translateX - e.movementX / scale < width * size * (1 + 1 / scale * showPercent) - ctx.canvas.width / scale &&
         translateY - e.movementY / scale > -width * size / scale * showPercent && translateY - e.movementY / scale < height * size * (1 + 1 / scale * showPercent) - ctx.canvas.height / scale &&
         startDrag.add(new Vector(-e.x, -e.y)).magnitude() > 10
