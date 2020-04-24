@@ -51,7 +51,7 @@ let translateY = 0
 let showPercent = 1 / 8
 
 ctx.lineWidth = 2
-let actualColor = "black"
+let currentColor = "black"
 
 let highlight = null
 let startDrag = null
@@ -110,14 +110,14 @@ function mouseClicked(e) {
         if (click.x >= 0 && click.x < width &&
             click.y >= 0 && click.y < height
         ) {
-            socket.emit("change", click.x, click.y, actualColor)
+            socket.emit("change", click.x, click.y, currentColor)
         }
     }
     startDrag = null
 }
 
 function changeColor(color) {
-    actualColor = color
+    currentColor = color
 }
 
 function scroll(e) {
@@ -149,7 +149,7 @@ function drawHint(e) {
     ctxInterface.globalAlpha = 0.8
     ctxInterface.lineWidth = 1
     ctxInterface.strokeStyle = "#808080"
-    ctxInterface.fillStyle = actualColor
+    ctxInterface.fillStyle = currentColor
     ctxInterface.fillRect(highlight.x + ctxInterface.lineWidth / 2, highlight.y + ctxInterface.lineWidth / 2,
         size - ctxInterface.lineWidth, size - ctxInterface.lineWidth
     )
