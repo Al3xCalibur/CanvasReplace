@@ -5,6 +5,9 @@ const titleText = title.innerText
 const canvas = document.getElementById('drawing')
 const canvasInterface = document.getElementById('interface')
 const image = document.getElementById('image')
+
+const position = document.getElementById('position')
+
 const timer = document.getElementById('timer')
 let timerTime = 0
 let interval = null
@@ -139,6 +142,7 @@ function scroll(e) {
 
 function drawHint(e) {
     highlight = new Vector(e.x, e.y).toWorld().toGrid()
+    position.innerText = "("+highlight.x/size+", "+highlight.y/size+")"
     let world = canvasToWorld()
     ctxInterface.clearRect(world.x - size, world.y - size, world.width + size, world.height + size)
     ctxInterface.globalAlpha = 0.8

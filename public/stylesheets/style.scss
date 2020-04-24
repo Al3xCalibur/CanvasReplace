@@ -32,6 +32,17 @@ button {
 }
 
 #timer {
+  top: 1em;
+  left: 0;
+  right: 0;
+}
+
+#position {
+  right: 1em;
+  bottom: 1em;
+}
+
+#position, #timer {
   background-color: rgba(0, 0, 0, 0.75);
   color: rgb(250, 250, 250);
   text-align: center;
@@ -42,9 +53,6 @@ button {
   border-radius: 21px;
   padding: 0 1.5em;
   position: absolute;
-  top: 1em;
-  left: 0;
-  right: 0;
   margin-left: auto;
   margin-right: auto;
   display: block;
