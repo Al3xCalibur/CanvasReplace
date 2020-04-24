@@ -122,29 +122,32 @@ function changeColor(color) {
 
 
 function scroll(e) {
-    e.preventDefault()
 
     let relativeScale = 1 - e.deltaY * 0.01
-    if (scale * relativeScale >= 0.70 && scale * relativeScale <= 10) {
-        let x = e.x - canvas.offsetLeft, y = e.y - canvas.offsetTop
+    if(scale*relativeScale < 0.7)
+        relativeScale = 0.7/scale
+    if(scale * relativeScale > 10)
+        relativeScale = 10/scale
 
-        let previous = scale
-        scale *= relativeScale
+    let x = e.x - canvas.offsetLeft, y = e.y - canvas.offsetTop
 
-        translateX -= x * (1 / scale - 1 / previous)
-        translateY -= y * (1 / scale - 1 / previous)
+    let previous = scale
+    scale *= relativeScale
 
-        let min_propor = size * showPercent / scale
-        let max_propor = size * (1 - showPercent) / scale
+    translateX -= x * (1 / scale - 1 / previous)
+    translateY -= y * (1 / scale - 1 / previous)
 
-        if (translateX < -width * min_propor) translateX = -width * min_propor
-        if (translateX > width * max_propor) translateX = width * max_propor
-        if (translateY > height * max_propor) translateY = height * max_propor
-        if (translateY < -height * min_propor) translateY = -height * min_propor
-        updateTransform()
-        draw()
-        drawHint(e)
-    }
+    let min_propor = size * showPercent / scale
+    let max_propor = size * (1 - showPercent) / scale
+
+    if (translateX < -width * min_propor) translateX = -width * min_propor
+    if (translateX > width * max_propor) translateX = width * max_propor
+    if (translateY > height * max_propor) translateY = height * max_propor
+    if (translateY < -height * min_propor) translateY = -height * min_propor
+    updateTransform()
+    draw()
+    drawHint(e)
+
 }
 
 function drawHint(e) {
