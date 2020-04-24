@@ -18,10 +18,52 @@ canvas {
 }
 
 button {
-  position:absolute;
-  bottom:10px;
   height:20px;
   width:40px;
   border:1px solid black;
   z-index:10;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  width: 50%;
+  margin: 15px;
+}
+
+@media (min-width: 0px){
+  .button-color {
+    flex: 0 0 25%;
+    max-width: 25%;
+  }
+}
+
+@media (min-width: 576px){
+  .button-color {
+    flex: 0 0 25%;
+    max-width: 25%;
+  }
+  .container {
+    max-width: 540px;
+  }
+}
+
+@media (min-width: 768px){
+  .button-color {
+    flex: 0 0 16.666%;
+    max-width: 16.666%;
+  }
+  .container {
+    max-width: 720px;
+  }
+}
+
+@media (min-width: 992px){
+  .button-color {
+    flex: 0 0 8.33%;
+    max-width: 8.33%;
+  }
+  .container {
+    max-width: 960px;
+  }
 }

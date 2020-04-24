@@ -7,11 +7,15 @@
 {% block body %}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
 
-  {% for color in colors %}
+  <div class="container" style="position: absolute;bottom: 0;">
+    <div class="row">
+    {% for color in colors %}
 
-    <button style="background-color:{{ color }};left:{{ 20 + 40 * loop.index }}px" onclick=changeColor("{{ color }}")></button>
+      <button class="button-color" style="background-color:{{ color }};" onclick=changeColor("{{ color }}")></button>
 
-  {% endfor %}
+    {% endfor %}
+    </div>
+  </div>
 
   <canvas id="interface" width="{{ width }}" height="{{ height }}" style="z-index: 1;"></canvas>
   <canvas id="drawing" width="{{ width }}" height="{{ height }}" style="z-index: 0;"></canvas>

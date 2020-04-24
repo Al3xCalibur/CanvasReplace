@@ -20,7 +20,7 @@ let queries = {
     },
     insert: function(x, y, color){
         return new Promise(function(resolve, reject){
-            db.run("INSERT INTO pixels (x, y, color) VALUES (?,?,?)", [x, y, color], (err) => {
+            db.run("REPLACE INTO pixels (x, y, color) VALUES (?,?,?)", [x, y, color], (err) => {
                 if(err){
                     reject(err)
                 } else {
