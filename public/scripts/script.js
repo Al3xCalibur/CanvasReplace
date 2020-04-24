@@ -2,9 +2,12 @@ const socket = io(window.location.origin)
 
 const canvas = document.getElementById('drawing')
 const canvasInterface = document.getElementById('interface')
+const image = document.getElementById('image')
 
 const ctx = canvas.getContext('2d')
 const ctxInterface = canvasInterface.getContext('2d')
+const ctxImage = image.getContext('2d')
+
 
 const size = 5
 let width
@@ -24,9 +27,13 @@ function resizeCanvas() {
     canvas.height = window.innerHeight;
     canvasInterface.width = window.innerWidth;
     canvasInterface.height = window.innerHeight;
+    image.width = width;
+    image.height = height;
 
     ctx.imageSmoothingEnabled = false
     ctxInterface.imageSmoothingEnabled = false
+    updateTransform()
+
     draw()
 }
 
@@ -48,14 +55,6 @@ class Rectangle {
         this.y = y
         this.width = width
         this.height = height
-    }
-}
-
-class Pixel {
-    constructor(x, y, color) {
-        this.x = x
-        this.y = y
-        this.color = color
     }
 }
 
@@ -90,8 +89,6 @@ class Vector {
         return Math.sqrt((this.x) ** 2 + (this.y) ** 2)
     }
 }
-
-let pixels = [];
 
 
 canvasInterface.addEventListener('click', mouseClicked)
@@ -174,16 +171,7 @@ function moveCanvas(e) {    //legers pb avec startDrag : on dessine pas toujours
 function draw() {
     let world = canvasToWorld()
     ctx.clearRect(world.x - size, world.y - size, world.width + size, world.height + size)
-    for (let i = 0; i < pixels.length; i++) {
-        for (let j = 0; j < pixels[i].length; j++) {
-            if (j >= (world.x - size)/size && j <= (world.x + world.width)/size &&
-                i >= (world.y - size)/size && i <= (world.y + world.height)/size) {
-                ctx.fillStyle = pixels[i][j]
-                ctx.fillRect(j*size, i*size, size, size)
-            }
-        }
-    }
-
+    ctx.drawImage(image, 0, 0, size*image.width, size*image.height)
 }
 
 function updateTransform() {
@@ -206,14 +194,15 @@ socket.on("updateAll", (widthReceived, heightReceived, data) => {
     resizeCanvas()
     updateTransform()
 
-    for(let i=0; i<height; i++) {
-        pixels[i] = []
-        for(let j=0; j<width; j++) {
-            pixels[i][j] = "white"
+    ctxImage.fillStyle = "white"
+    for (let i = 0; i < height; i++) {
+        for (let j = 0; j < width; j++) {
+            ctxImage.fillRect(j, i, 1, 1)
         }
     }
     for (pixel of data) {
-        pixels[pixel.y][pixel.x] = pixel.color
+        ctxImage.fillStyle = pixel.color
+        ctxImage.fillRect(pixel.x, pixel.y, 1, 1)
     }
 
     draw()
@@ -222,6 +211,7 @@ socket.on("updateAll", (widthReceived, heightReceived, data) => {
 })
 
 socket.on("update", (x, y, color) => {
-    pixels[y][x] = color
+    ctxImage.fillStyle = color
+    ctxImage.fillRect(x, y, 1, 1)
     draw()
 })
