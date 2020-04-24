@@ -32,7 +32,8 @@ module.exports = function (io) {
             ) {
                 database.insert(x, y, color).then(
                     () => {
-                        io.emit("update", x, y, color)
+                        socket.broadcast.emit("update", x, y, color)
+                        socket.emit("updateYou", x, y, color)
                         socket.lastUpdate = Date.now()
                     },
                     console.log

@@ -3,6 +3,9 @@ const socket = io(window.location.origin)
 const canvas = document.getElementById('drawing')
 const canvasInterface = document.getElementById('interface')
 const image = document.getElementById('image')
+const timer = document.getElementById('timer')
+let timerTime = 0
+let interval = null
 
 const ctx = canvas.getContext('2d')
 const ctxInterface = canvasInterface.getContext('2d')
@@ -185,6 +188,7 @@ function canvasToWorld() {
 
 
 socket.on("updateAll", (widthReceived, heightReceived, data) => {
+    setTimer(5)
     width = widthReceived
     height = heightReceived
 
@@ -212,3 +216,28 @@ socket.on("update", (x, y, color) => {
     ctxImage.fillRect(x, y, 1, 1)
     draw()
 })
+
+socket.on("updateYou", (x, y, color) => {
+    ctxImage.fillStyle = color
+    ctxImage.fillRect(x, y, 1, 1)
+    setTimer(5)
+    draw()
+})
+
+function setTimer(seconds){
+    if(interval != null)
+        clearInterval(interval)
+    timerTime = seconds
+    timer.innerText = timerTime+" seconds"
+    timer.style.visibility = 'visible'
+    interval = setInterval(()=> {
+        timerTime--
+
+        if(timerTime === 0){
+            clearInterval(interval)
+            timer.style.visibility = 'hidden'
+        } else {
+            timer.innerText = timerTime+" seconds"
+        }
+    }, 1000)
+}
