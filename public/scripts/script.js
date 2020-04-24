@@ -21,14 +21,11 @@ window.mobileCheck = function () {
     return check;
 }
 window.addEventListener('resize', resizeCanvas, false);
-
 function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     canvasInterface.width = window.innerWidth;
     canvasInterface.height = window.innerHeight;
-    image.width = width;
-    image.height = height;
 
     ctx.imageSmoothingEnabled = false
     ctxInterface.imageSmoothingEnabled = false

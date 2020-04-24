@@ -26,7 +26,10 @@ module.exports = function (io) {
         )
 
         socket.on('change', (x, y, color) => {
-            if(Date.now() - socket.lastUpdate > 5 * 1000) {
+            if(Date.now() - socket.lastUpdate > 5 * 1000 &&
+                Number.isInteger(x) && x >= 0 && x < width &&
+                Number.isInteger(y) && y >= 0 && y < height
+            ) {
                 database.insert(x, y, color).then(
                     () => {
                         io.emit("update", x, y, color)
