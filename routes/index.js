@@ -31,11 +31,18 @@ module.exports = function (io) {
                 Number.isInteger(x) && x >= 0 && x < width &&
                 Number.isInteger(y) && y >= 0 && y < height
             ) {
-                database.insert(x, y, color).then(
-                    () => {
-                        socket.broadcast.emit("update", x, y, color)
-                        socket.emit("updateYou", x, y, color)
-                        socket.lastUpdate = Date.now()
+                database.checkColor(x, y, color).then(
+                    (check) => {
+                        if (check){
+                            database.insert(x, y, color).then(
+                                () => {
+                                    socket.broadcast.emit("update", x, y, color)
+                                    socket.emit("updateYou", x, y, color)
+                                    socket.lastUpdate = Date.now()
+                                },
+                                console.log
+                            )
+                        }
                     },
                     console.log
                 )

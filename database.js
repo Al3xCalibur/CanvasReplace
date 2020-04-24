@@ -18,6 +18,7 @@ let queries = {
             });
         })
     },
+
     insert: function(x, y, color){
         return new Promise(function(resolve, reject){
             db.run("REPLACE INTO pixels (x, y, color) VALUES (?,?,?)", [x, y, color], (err) => {
@@ -28,8 +29,24 @@ let queries = {
                 }
             })
         })
-    }
+    },
 
+    checkColor: function (x, y, color) {
+        return new Promise(function (resolve, reject) {
+            db.get("SELECT color FROM pixels WHERE x=? AND y=?", [x, y], (err, row) => {
+                if(err){
+                    reject(err)
+                } else {
+                    if (typeof row == "undefined") resolve(true)
+                    else {
+                        if (row.color === color) {
+                            resolve(false)
+                        } else resolve(true)
+                    }
+                }
+            })
+        })
+    }
 
 }
 
