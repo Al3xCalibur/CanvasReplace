@@ -98,7 +98,7 @@ class Vector {
         return Math.sqrt((this.x) ** 2 + (this.y) ** 2)
     }
 }
-
+document.addEventListener('contextmenu', event => event.preventDefault());
 canvasInterface.addEventListener('click', mouseClicked)
 window.addEventListener('wheel', scroll)
 canvasInterface.addEventListener('mousemove', moveCanvas)
