@@ -37,7 +37,13 @@ let queries = {
                 if(err){
                     reject(err)
                 } else {
-                    if (typeof row == "undefined") resolve(true)
+                    if (typeof row == "undefined") {
+                        // pour la couleur de base, non stockée
+                        if (row.color === "#FFFFFF") resolve(false)
+                        else resolve(true)
+                        // autrement :
+                        // resolve(true)
+                    }
                     else {
                         if (row.color === color) {
                             resolve(false)

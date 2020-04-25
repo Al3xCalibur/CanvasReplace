@@ -102,6 +102,14 @@ class Vector {
     }
 }
 
+class eventMove {
+    constructor(x, y, movementX, movementY) {
+        this.x = x
+        this.y = y
+        this.movementX = movementX
+        this.movementY = movementY
+    }
+}
 
 document.addEventListener('contextmenu', event => event.preventDefault())
 window.addEventListener('click', (e) => {
@@ -109,16 +117,33 @@ window.addEventListener('click', (e) => {
         closeModal()
     }
 })
-canvasInterface.addEventListener('wheel', scroll)
-canvasInterface.addEventListener('click', mouseClicked)
-canvasInterface.addEventListener('mousemove', moveCanvas)
+let hammertime
+if (mobileCheck()) {
+    socket.emit("mobile")
+    hammertime =  new Hammer(canvasInterface)
+    hammertime.get('pan').set({ direction: Hammer.DIRECTION_ALL });
+    hammertime.get('pinch').set({enable: true})
+    hammertime.on('pinch', scroll)
+    hammertime.on('pan', moveCanvas)
+    hammertime.on('tap', mouseClicked)
+
+} else {
+    canvasInterface.addEventListener('click', mouseClicked)
+    canvasInterface.addEventListener('wheel', scroll)
+    canvasInterface.addEventListener('mousemove', moveCanvas)
+}
 info.addEventListener('click', openModal)
 close.forEach((it)=>{it.addEventListener('click', closeModal)})
 
 
 function mouseClicked(e) {
     if (!moved) {
-        let click = (new Vector(e.x, e.y)).toWorld().toNormalizedGrid()
+        let click
+        if (mobileCheck()) {
+            click = (new Vector(e.center.x, e.center.y)).toWorld().toNormalizedGrid()
+        } else {
+            click = (new Vector(e.x, e.y)).toWorld().toNormalizedGrid()
+        }
 
         if (click.x >= 0 && click.x < width &&
             click.y >= 0 && click.y < height
@@ -137,13 +162,26 @@ function changeColor(color) {
 
 
 function scroll(e) {
+    let event
+    if (mobileCheck()) {
+        if (e.additionalEvent === "pinchin") {
+            event = new eventMove(e.center.x, e.center.y, null, e.scale)
+        }
+        if (e.additionalEvent === "pinchout") {
+            event = new eventMove(e.center.x, e.center.y, null, -e.scale)
+        }
+    } else {
+        event = new eventMove(e.x, e.y, null, e.deltaY)
+    }
 
-    let relativeScale = 1 - e.deltaY * 0.01
+    let relativeScale = 1 - event.movementY * 0.01
+    console.log(event, relativeScale)
+
     let newScale =  scale * relativeScale
     newScale = Math.max(newScale, 0.7)
     newScale = Math.min(newScale, 10)
 
-    let x = e.x - canvas.offsetLeft, y = e.y - canvas.offsetTop
+    let x = event.x - canvas.offsetLeft, y = event.y - canvas.offsetTop
 
     let previous = scale
     scale = newScale
@@ -158,13 +196,19 @@ function scroll(e) {
 
     updateTransform()
     draw()
-    drawHint(e)
-
+    drawHint(event.x, event.y)
 }
 
-function drawHint(e) {
-    highlight = new Vector(e.x, e.y).toWorld().toGrid()
-    position.innerText = "("+highlight.x/size+", "+highlight.y/size+")"
+function drawHint(x, y) {
+    let highlight
+    if (mobileCheck()) {
+        highlight = new Vector(x, y).toWorld().toGrid()
+    } else {
+        highlight = new Vector(x, y).toWorld().toGrid()
+    }
+
+    position.innerText = "("+(1+highlight.x/size)+", "+(1+highlight.y/size)+")"
+
     let world = canvasToWorld()
     ctxInterface.clearRect(world.x - size, world.y - size, world.width + size, world.height + size)
     ctxInterface.globalAlpha = 0.8
@@ -177,19 +221,26 @@ function drawHint(e) {
     ctxInterface.strokeRect(highlight.x, highlight.y, size, size)
 }
 
-function moveCanvas(e) {    //legers pb avec startDrag : on dessine pas toujours en cliquant
-    drawHint(e)
+function moveCanvas(e) {
 
-    if ((window.mobileCheck() && e.touches.length > 1 && e.buttons === 0 ) || e.buttons === 0) {
-        startDrag = null
-        moved = false
-        return;
+    let event
+    if (mobileCheck()) {
+        event = new eventMove(e.center.x, e.center.y, e.deltaX/20, e.deltaY/20)
+    } else {
+        if (e.buttons === 0) {
+            startDrag = null
+            moved = false
+            drawHint(e.x, e.y)
+            return;
+        }
+        event = new eventMove(e.x, e.y, e.movementX, e.movementY)
     }
+    drawHint(event.x, event.y)
 
-    if (startDrag == null) return startDrag = new Vector(e.x, e.y)
+    if (startDrag == null) return startDrag = new Vector(event.x, event.y)
 
-    let newTranslateX = translateX - e.movementX / scale
-    let newTranslateY = translateY - e.movementY / scale
+    let newTranslateX = translateX - event.movementX / scale
+    let newTranslateY = translateY - event.movementY / scale
 
     newTranslateX = Math.max(newTranslateX, -showPercent*canvas.width/scale)
     newTranslateX = Math.min(newTranslateX, width*size-(1-showPercent)*canvas.width/scale)
@@ -197,7 +248,7 @@ function moveCanvas(e) {    //legers pb avec startDrag : on dessine pas toujours
     newTranslateY = Math.max(newTranslateY, -showPercent*canvas.height/scale)
     newTranslateY = Math.min(newTranslateY, height*size-(1-showPercent)*canvas.height/scale)
 
-    if(startDrag.add(new Vector(-e.x, -e.y)).magnitude() > dragMin) {
+    if(startDrag.add(new Vector(-event.x, -event.y)).magnitude() > dragMin) {
         moved = true
         translateX = newTranslateX
         translateY = newTranslateY
