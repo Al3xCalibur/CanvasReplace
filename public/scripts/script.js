@@ -19,6 +19,7 @@ const ctxImage = image.getContext('2d')
 
 
 const size = 5
+let dragMin = 5
 let width
 let height
 
@@ -53,6 +54,7 @@ let showPercent = 1 / 4
 ctx.lineWidth = 2
 let currentColor = "black"
 
+let moved = false
 let highlight = null
 let startDrag = null
 
@@ -103,7 +105,7 @@ canvasInterface.addEventListener('mousemove', moveCanvas)
 
 
 function mouseClicked(e) {
-    if ((window.mobileCheck() && e.touches.length === 1 && startDrag == null ) || startDrag == null) {
+    if (!moved) {
         let click = (new Vector(e.x, e.y)).toWorld().toNormalizedGrid()
 
         if (click.x >= 0 && click.x < width &&
@@ -112,6 +114,7 @@ function mouseClicked(e) {
             socket.emit("change", click.x, click.y, currentColor)
         }
     }
+    moved = false
     startDrag = null
 }
 
@@ -167,6 +170,7 @@ function moveCanvas(e) {    //legers pb avec startDrag : on dessine pas toujours
 
     if ((window.mobileCheck() && e.touches.length > 1 && e.buttons === 0 ) || e.buttons === 0) {
         startDrag = null
+        moved = false
         return;
     }
 
@@ -181,11 +185,14 @@ function moveCanvas(e) {    //legers pb avec startDrag : on dessine pas toujours
     newTranslateY = Math.max(newTranslateY, -showPercent*canvas.height/scale)
     newTranslateY = Math.min(newTranslateY, height*size-(1-showPercent)*canvas.height/scale)
 
-    if(startDrag.add(new Vector(-e.x, -e.y)).magnitude() > 5) {
+    if(startDrag.add(new Vector(-e.x, -e.y)).magnitude() > dragMin) {
+        moved = true
         translateX = newTranslateX
         translateY = newTranslateY
         updateTransform()
         draw()
+    } else {
+        moved = false
     }
 }
 
