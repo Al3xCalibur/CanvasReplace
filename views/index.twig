@@ -1,28 +1,56 @@
 {% extends 'layout.twig' %}
 
 {% set colors = ['#000000', '#404040', '#a0a0a0', '#ffffff', '#a05020', '#542100', '#800000', '#ff0000', '#ff6000',
-  '#ffa000', '#ffff00', '#b0ff00', '#007000', '#40c000', '#00ffa0', '#00d0ff', '#0080ff', '#0040ff', '#000040',
-  '#8060ff', '#8000ff', '#ff30ff', '#ff90ff', '#ffffb0'] %}
+    '#ffa000', '#ffff00', '#b0ff00', '#007000', '#40c000', '#00ffa0', '#00d0ff', '#0080ff', '#0040ff', '#000040',
+    '#8060ff', '#8000ff', '#ff30ff', '#ff90ff', '#ffffb0'] %}
 
 {% block body %}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
-  <script src="https://hammerjs.github.io/dist/hammer.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    <script src="https://hammerjs.github.io/dist/hammer.min.js"></script>
 
-  <div class="container" style="position: absolute;bottom: 0;">
-    <div class="row">
-    {% for color in colors %}
+    <div class="container" style="position: absolute;bottom: 0;">
+        <div class="row">
+            {% for color in colors %}
 
-      <button class="button-color" style="background-color:{{ color }};" onclick=changeColor("{{ color }}")></button>
+                <button class="button-color" style="background-color:{{ color }};" onclick=changeColor("{{ color }}")></button>
 
-    {% endfor %}
+            {% endfor %}
+        </div>
     </div>
-  </div>
-  <div id="position"></div>
-  <div id="people"></div>
-  <a id="download" download="CanvasReplace.png" href="" onclick="downloadImg(this);">Télécharger</a>
-  <div id="timer" style="visibility: hidden;"></div>
-  <canvas id="interface" width="{{ width }}" height="{{ height }}" style="z-index: 1;"></canvas>
-  <canvas id="drawing" width="{{ width }}" height="{{ height }}" style="z-index: 0;"></canvas>
-  <canvas id="image" width="400" height="300" style="display: none;"></canvas>
-  <script src="/scripts/script.js"></script>
+
+    <div id="modalInfo" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h1 style="text-align: center;">CanvasReplace</h1>
+            <p>Développé dans le cadre du Festiv@rt du BDA de Télécom-Sudparis et Institut Mines-Télécom Business School par
+                le Club Code, le Club Jeux et le CELL. (D'après l'idée du CELL, la réflexion du Club Jeux et le développement du Club Code)
+            </p>
+            <p>Il s'agit d'un site similaire à l'événement <i>/r/place</i> qui a développé une idée de canvas collaboratif.</p>
+            <p>Le but étant de promouvoir le Pixel Art et de montrer que les gens sont aussi capables !</p>
+            <h2>Principe</h2>
+            <p>Laissez libre court à votre imagination en participant à ce canvas collaboratif pour y proposer vos meilleurs dessins faits de pixels.</p>
+            <p>Pour développer ces aspects, le canvas est de taille limitée et vous ne pouvez poser de pixels que toutes.</p>
+            <h2>Règles </h2>
+            <p>Afin que ce canvas puisse être réutilisé et intéressant pour tous les mondes, il est nécessaire de respecter ces quelques règles :</p>
+            <ul>
+                <li>Pas d'insultes ou d'attaques personnelles, il faut rester courtois, ici le but est d'échanger</li>
+                <li>Pas d'obscenités ()</li>
+                <li>Pas de politique, vos opinions vous regarde</li>
+                <li>Pas de triche (bots, techniques pour réduire le temps), on sait que le temps entre deux clics est long, mais c'est pour développer la collaboration !</li>
+            </ul>
+            <p>Si ces règles ne sont pas respectées, nous (administrateurs) nous autorisons le droit de couper momentannément le serveur
+                afin de rétablir le respect des règles (suppressions des images gênantes).
+            </p>
+        </div>
+    </div>
+
+    <div id="info">ⓘ</div>
+    <div id="position"></div>
+    <div id="people"></div>
+    <a id="download" download="CanvasReplace.png" href="" onclick="downloadImg(this);">Télécharger</a>
+    <div id="timer" style="visibility: hidden;"></div>
+    <canvas id="interface" width="{{ width }}" height="{{ height }}" style="z-index: 1;"></canvas>
+    <canvas id="drawing" width="{{ width }}" height="{{ height }}" style="z-index: 0;"></canvas>
+    <canvas id="image" width="400" height="300" style="display: none;"></canvas>
+    <script src="/scripts/script.js"></script>
 {% endblock %}

@@ -1,6 +1,9 @@
 const socket = io(window.location.origin)
 const title = document.querySelector('title')
 const titleText = title.innerText
+const modalInfo = document.getElementById('modalInfo')
+const info = document.getElementById('info')
+const close = document.querySelectorAll('.close')
 
 const canvas = document.getElementById('drawing')
 const canvasInterface = document.getElementById('interface')
@@ -98,10 +101,19 @@ class Vector {
         return Math.sqrt((this.x) ** 2 + (this.y) ** 2)
     }
 }
+
+
 document.addEventListener('contextmenu', event => event.preventDefault())
+window.addEventListener('click', (e) => {
+    if(e.target === modalInfo){
+        closeModal()
+    }
+})
+canvasInterface.addEventListener('wheel', scroll)
 canvasInterface.addEventListener('click', mouseClicked)
-window.addEventListener('wheel', scroll)
 canvasInterface.addEventListener('mousemove', moveCanvas)
+info.addEventListener('click', openModal)
+close.forEach((it)=>{it.addEventListener('click', closeModal)})
 
 
 function mouseClicked(e) {
@@ -289,6 +301,12 @@ function downloadImg(el) {
     el.href = dl
 }
 
+function openModal(){
+    modalInfo.style.display = "block"
+}
 
+function closeModal() {
+    modalInfo.style.display = "none"
+}
 
 
