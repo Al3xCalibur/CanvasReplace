@@ -48,7 +48,7 @@ function resizeCanvas() {
 let scale = 2
 let translateX = 0
 let translateY = 0
-let showPercent = 1 / 8
+let showPercent = 1 / 4
 
 ctx.lineWidth = 2
 let currentColor = "black"
@@ -134,12 +134,12 @@ function scroll(e) {
     scale = newScale
 
     translateX -= x * (1 / scale - 1 / previous)
-    translateX = Math.max(translateX, -canvas.width/(4*scale))
-    translateX = Math.min(translateX, width*size-3*canvas.width/(4*scale))
+    translateX = Math.max(translateX, -showPercent*canvas.width/scale)
+    translateX = Math.min(translateX, width*size-(1-showPercent)*canvas.width/scale)
 
     translateY -= y * (1 / scale - 1 / previous)
-    translateY = Math.max(translateY, -canvas.height/(4*scale))
-    translateY = Math.min(translateY, height*size-3*canvas.height/(4*scale))
+    translateY = Math.max(translateY, -showPercent*canvas.height/scale)
+    translateY = Math.min(translateY, height*size-(1-showPercent)*canvas.height/scale)
 
     updateTransform()
     draw()
@@ -175,11 +175,11 @@ function moveCanvas(e) {    //legers pb avec startDrag : on dessine pas toujours
     let newTranslateX = translateX - e.movementX / scale
     let newTranslateY = translateY - e.movementY / scale
 
-    newTranslateX = Math.max(newTranslateX, -canvas.width/(4*scale))
-    newTranslateX = Math.min(newTranslateX, width*size-3*canvas.width/(4*scale))
+    newTranslateX = Math.max(newTranslateX, -showPercent*canvas.width/scale)
+    newTranslateX = Math.min(newTranslateX, width*size-(1-showPercent)*canvas.width/scale)
 
-    newTranslateY = Math.max(newTranslateY, -canvas.height/(4*scale))
-    newTranslateY = Math.min(newTranslateY, height*size-3*canvas.height/(4*scale))
+    newTranslateY = Math.max(newTranslateY, -showPercent*canvas.height/scale)
+    newTranslateY = Math.min(newTranslateY, height*size-(1-showPercent)*canvas.height/scale)
 
     if(startDrag.add(new Vector(-e.x, -e.y)).magnitude() > 5) {
         translateX = newTranslateX
