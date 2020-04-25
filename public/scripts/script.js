@@ -33,10 +33,10 @@ window.mobileCheck = function () {
 window.addEventListener('resize', resizeCanvas, false);
 
 function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    canvasInterface.width = window.innerWidth;
-    canvasInterface.height = window.innerHeight;
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
+    canvasInterface.width = window.innerWidth
+    canvasInterface.height = window.innerHeight
 
     ctx.imageSmoothingEnabled = false
     ctxInterface.imageSmoothingEnabled = false
@@ -220,6 +220,9 @@ socket.on("updateAll", (widthReceived, heightReceived, data) => {
     width = widthReceived
     height = heightReceived
 
+    image.width = width
+    image.height = height
+
     resizeCanvas()
     updateTransform()
 
@@ -256,6 +259,10 @@ socket.on("people", (number) => {
     people.innerText = number + " connectés"
 })
 
+/**
+ * Timer
+ * @param seconds
+ */
 function setTimer(seconds) {
     if (interval != null)
         clearInterval(interval)
@@ -276,3 +283,12 @@ function setTimer(seconds) {
         }
     }, 1000)
 }
+
+function downloadImg(el) {
+    let dl = image.toDataURL("image/png");
+    el.href = dl;
+};
+
+
+
+
