@@ -122,29 +122,29 @@ function changeColor(color) {
 
 
 function scroll(e) {
-    e.preventDefault()
 
     let relativeScale = 1 - e.deltaY * 0.01
-    if (scale * relativeScale >= 0.70 && scale * relativeScale <= 10) {
-        let x = e.x - canvas.offsetLeft, y = e.y - canvas.offsetTop
+    let newScale =  scale * relativeScale
+    newScale = Math.max(newScale, 0.7)
+    newScale = Math.min(newScale, 10)
 
-        let previous = scale
-        scale *= relativeScale
+    let x = e.x - canvas.offsetLeft, y = e.y - canvas.offsetTop
 
-        translateX -= x * (1 / scale - 1 / previous)
-        translateY -= y * (1 / scale - 1 / previous)
+    let previous = scale
+    scale = newScale
 
-        let min_propor = size * showPercent / scale
-        let max_propor = size * (1 + 1 / scale * showPercent)
+    translateX -= x * (1 / scale - 1 / previous)
+    translateX = Math.max(translateX, -canvas.width/(4*scale))
+    translateX = Math.min(translateX, width*size-3*canvas.width/(4*scale))
 
-        if (translateX < -width * min_propor) translateX = -width * min_propor
-        if (translateX > width * max_propor) translateX = width * max_propor
-        if (translateY > height * max_propor) translateY = height * max_propor
-        if (translateY < -height * min_propor) translateY = -height * min_propor
-        updateTransform()
-        draw()
-        drawHint(e)
-    }
+    translateY -= y * (1 / scale - 1 / previous)
+    translateY = Math.max(translateY, -canvas.height/(4*scale))
+    translateY = Math.min(translateY, height*size-3*canvas.height/(4*scale))
+
+    updateTransform()
+    draw()
+    drawHint(e)
+
 }
 
 function drawHint(e) {
@@ -172,15 +172,18 @@ function moveCanvas(e) {    //legers pb avec startDrag : on dessine pas toujours
 
     if (startDrag == null) return startDrag = new Vector(e.x, e.y)
 
-    let min_propor = size * showPercent / scale
-    let max_propor = size * (1 + 1 / scale * showPercent)
+    let newTranslateX = translateX - e.movementX / scale
+    let newTranslateY = translateY - e.movementY / scale
 
-    if (translateX - e.movementX / scale > -width * min_propor && translateX - e.movementX / scale < width * max_propor - ctx.canvas.width / scale &&
-        translateY - e.movementY / scale > -height * min_propor && translateY - e.movementY / scale < height * max_propor - ctx.canvas.height / scale &&
-        startDrag.add(new Vector(-e.x, -e.y)).magnitude() > 10
-    ) {
-        translateX -= e.movementX / scale
-        translateY -= e.movementY / scale
+    newTranslateX = Math.max(newTranslateX, -canvas.width/(4*scale))
+    newTranslateX = Math.min(newTranslateX, width*size-3*canvas.width/(4*scale))
+
+    newTranslateY = Math.max(newTranslateY, -canvas.height/(4*scale))
+    newTranslateY = Math.min(newTranslateY, height*size-3*canvas.height/(4*scale))
+
+    if(startDrag.add(new Vector(-e.x, -e.y)).magnitude() > 5) {
+        translateX = newTranslateX
+        translateY = newTranslateY
         updateTransform()
         draw()
     }
