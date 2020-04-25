@@ -39,7 +39,7 @@ let queries = {
                 } else {
                     if (typeof row == "undefined") {
                         // pour la couleur de base, non stockée
-                        if (color === "#FFFFFF") resolve(false)
+                        if (color.toLowerCase() === "#ffffff" || color.toLowerCase() === "white") resolve(false)
                         else resolve(true)
                         // autrement :
                         // resolve(true)
