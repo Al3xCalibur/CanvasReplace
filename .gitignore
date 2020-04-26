@@ -3,3 +3,4 @@ node_modules/
 *.css*
 package-lock.json
 database.db
+.env
