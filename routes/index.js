@@ -3,13 +3,13 @@ let router = express.Router();
 
 let database = require("../database")
 
-const width = 384
-const height = 216
-const timerSeconds = 5
+const width = process.env.WIDTH
+const height = process.env.HEIGHT
+const timerSeconds = process.env.TIMER
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-    res.render('index', {title: 'CanvasReplace', width: width, height: height});
+    res.render('index', {title: 'CanvasReplace', width: width, height: height, timer: timerSeconds});
 });
 /**
  * @param {Server} io
@@ -31,7 +31,7 @@ module.exports = function (io) {
         io.emit("people", Object.keys(io.sockets.connected).length)
         database.all().then(
             (value) => {
-                socket.emit("updateAll", width, height, value)
+                socket.emit("updateAll", width, height, timerSeconds, value)
             },
             console.log
         )

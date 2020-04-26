@@ -279,8 +279,8 @@ function canvasToWorld() {
 }
 
 
-socket.on("updateAll", (widthReceived, heightReceived, data) => {
-    setTimer(5)
+socket.on("updateAll", (widthReceived, heightReceived, timer, data) => {
+    setTimer(timer)
     width = widthReceived
     height = heightReceived
 
