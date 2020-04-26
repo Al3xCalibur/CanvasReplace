@@ -9,12 +9,6 @@ const io = require('socket.io')()
 const dotenv = require('dotenv');
 dotenv.config();
 
-const session = require("express-session")({
-    secret: process.env.SECRET,
-    resave: true,
-    saveUninitialized: true,
-    cookie: { secure: false }
-})
 const indexRouter = require('./routes/index');
 
 const app = express();
@@ -35,11 +29,6 @@ app.use(sassMiddleware({
     sourceMap: true
 }));
 app.use(express.static(path.join(__dirname, 'public')));
-
-app.use(session)
-io.use((socket, next) => {
-    session(socket.request, {}, next)
-})
 
 app.use('/', indexRouter(io));
 

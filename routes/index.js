@@ -5,7 +5,9 @@ let database = require("../database")
 
 const width = process.env.WIDTH
 const height = process.env.HEIGHT
-const timerSeconds = process.env.TIMER
+const timerSeconds = 10
+
+const connected = {}
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -18,16 +20,6 @@ router.get('/', function (req, res, next) {
 module.exports = function (io) {
 
     io.on('connection', (socket) => {
-        let session = socket.request.session
-        if(!(session.sid in io.sockets.connected)){
-            session.sid = socket.id
-            session.first = true
-            session.save()
-        } else {
-            session.first = false
-            session.save()
-        }
-        socket.lastUpdate = Date.now()
         io.emit("people", Object.keys(io.sockets.connected).length)
         database.all().then(
             (value) => {
@@ -36,21 +28,37 @@ module.exports = function (io) {
             console.log
         )
 
-        socket.on('mobile', () => {console.log("A mobile user has connected")})
+        socket.on('login', (uid) => {
+            if(uid !== undefined){
+                socket.uid = uid
+                if(!(uid in connected)){
+                    connected[uid] = {socket: socket, lastUpdate: Date.now()-60*60*1000}
+                } else {
+                    connected[uid].socket = socket
+                }
+            } else {
+                socket.disconnect()
+            }
+        })
+
+        socket.on('mobile', () => {
+            console.log("A mobile user has connected")
+        })
+
         socket.on('change', (x, y, color) => {
-            if (session.first &&
-                Date.now() - socket.lastUpdate > timerSeconds * 1000 &&
+            if ( connected[socket.uid] &&
+                Date.now() - connected[socket.uid].lastUpdate > timerSeconds * 1000 &&
                 Number.isInteger(x) && x >= 0 && x < width &&
                 Number.isInteger(y) && y >= 0 && y < height
             ) {
                 database.checkColor(x, y, color).then(
                     (check) => {
-                        if (check){
+                        if (check) {
                             database.insert(x, y, color).then(
                                 () => {
                                     socket.broadcast.emit("update", x, y, color)
                                     socket.emit("updateYou", x, y, color, timerSeconds)
-                                    socket.lastUpdate = Date.now()
+                                    connected[socket.uid].lastUpdate = Date.now()
                                 },
                                 console.log
                             )
@@ -62,19 +70,17 @@ module.exports = function (io) {
         })
 
         socket.on('reconnect', () => {
-            if(!(session.sid in io.sockets.connected)){
-                session.sid = socket.id
-                session.save()
-            }
+
         })
 
         socket.on('disconnect', () => {
             io.emit('people', Object.keys(io.sockets.connected).length)
-            if (socket.handshake.session) {
-                delete socket.handshake.session.sid;
-                delete socket.handshake.session.first
-                session.save()
-            }
+
+            setTimeout(() => {
+                if (connected[socket.uid] && connected[socket.uid].socket === socket)
+                    delete connected[socket.uid]
+            }, timerSeconds * 1000)
+
         })
 
     })

@@ -20,6 +20,10 @@ const ctx = canvas.getContext('2d')
 const ctxInterface = canvasInterface.getContext('2d')
 const ctxImage = image.getContext('2d')
 
+if(!localStorage.getItem('uid')) {
+    localStorage.setItem('uid', Math.random().toString(24) + new Date())
+}
+socket.emit('login', localStorage.getItem('uid'))
 
 const size = 5
 let dragMin = 5
@@ -330,24 +334,26 @@ socket.on("people", (number) => {
  * @param seconds
  */
 function setTimer(seconds) {
-    if (interval != null)
-        clearInterval(interval)
-    timerTime = seconds
-    timer.innerText = timerTime + " seconds"
-    title.innerText = timerTime +"s | " + titleText
-    timer.style.visibility = 'visible'
-    interval = setInterval(() => {
-        timerTime--
-
-        if (timerTime === 0) {
+    if(seconds > 0) {
+        if (interval != null)
             clearInterval(interval)
-            timer.style.visibility = 'hidden'
-            title.innerText = titleText
-        } else {
-            timer.innerText = timerTime + " seconds"
-            title.innerText = timerTime +"s | " + titleText
-        }
-    }, 1000)
+        timerTime = seconds
+        timer.innerText = timerTime + " seconds"
+        title.innerText = timerTime + "s | " + titleText
+        timer.style.visibility = 'visible'
+        interval = setInterval(() => {
+            timerTime--
+
+            if (timerTime === 0) {
+                clearInterval(interval)
+                timer.style.visibility = 'hidden'
+                title.innerText = titleText
+            } else {
+                timer.innerText = timerTime + " seconds"
+                title.innerText = timerTime + "s | " + titleText
+            }
+        }, 1000)
+    }
 }
 
 function downloadImg(el) {
