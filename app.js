@@ -6,6 +6,15 @@ const logger = require('morgan');
 const sassMiddleware = require('node-sass-middleware');
 const io = require('socket.io')()
 
+const dotenv = require('dotenv');
+dotenv.config();
+
+const session = require("express-session")({
+    secret: process.env.SECRET,
+    resave: true,
+    saveUninitialized: true,
+    cookie: { secure: false }
+})
 const indexRouter = require('./routes/index');
 
 const app = express();
@@ -17,32 +26,37 @@ app.set('view engine', 'twig');
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(sassMiddleware({
-  src: path.join(__dirname, 'public'),
-  dest: path.join(__dirname, 'public'),
-  indentedSyntax: false, // true = .sass and false = .scss
-  sourceMap: true
+    src: path.join(__dirname, 'public'),
+    dest: path.join(__dirname, 'public'),
+    indentedSyntax: false, // true = .sass and false = .scss
+    sourceMap: true
 }));
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(session)
+io.use((socket, next) => {
+    session(socket.request, {}, next)
+})
 
 app.use('/', indexRouter(io));
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
+app.use(function (req, res, next) {
+    next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+app.use(function (err, req, res, next) {
+    // set locals, only providing error in development
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+    // render the error page
+    res.status(err.status || 500);
+    res.render('error');
 });
 
 module.exports = app;

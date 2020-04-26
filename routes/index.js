@@ -17,6 +17,15 @@ router.get('/', function (req, res, next) {
 module.exports = function (io) {
 
     io.on('connection', (socket) => {
+        let session = socket.request.session
+        if(!(session.sid in io.sockets.connected)){
+            session.sid = socket.id
+            session.first = true
+            session.save()
+        } else {
+            session.first = false
+            session.save()
+        }
         socket.lastUpdate = Date.now()
         io.emit("people", Object.keys(io.sockets.connected).length)
         database.all().then(
@@ -28,7 +37,8 @@ module.exports = function (io) {
 
         socket.on('mobile', () => {console.log("A mobile user has connected")})
         socket.on('change', (x, y, color) => {
-            if (Date.now() - socket.lastUpdate > 5 * 1000 &&
+            if (session.first &&
+                Date.now() - socket.lastUpdate > 5 * 1000 &&
                 Number.isInteger(x) && x >= 0 && x < width &&
                 Number.isInteger(y) && y >= 0 && y < height
             ) {
@@ -50,8 +60,20 @@ module.exports = function (io) {
             }
         })
 
+        socket.on('reconnect', () => {
+            if(!(session.sid in io.sockets.connected)){
+                session.sid = socket.id
+                session.save()
+            }
+        })
+
         socket.on('disconnect', () => {
             io.emit('people', Object.keys(io.sockets.connected).length)
+            if (socket.handshake.session) {
+                delete socket.handshake.session.sid;
+                delete socket.handshake.session.first
+                session.save()
+            }
         })
 
     })
