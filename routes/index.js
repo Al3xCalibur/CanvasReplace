@@ -5,7 +5,7 @@ let database = require("../database")
 
 const width = process.env.WIDTH
 const height = process.env.HEIGHT
-const timerSeconds = 10
+const timerSeconds = process.env.TIMER
 
 const connected = {}
 
