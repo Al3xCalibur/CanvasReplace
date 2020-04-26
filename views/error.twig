@@ -1,7 +1,6 @@
 {% extends 'layout.twig' %}
 
 {% block body %}
-  <h1>{{message}}</h1>
-  <h2>{{error.status}}</h2>
-  <pre>{{error.stack}}</pre>
+  <p style="text-align: center;"><img src="/favicon.png" alt="Our wonderful emblem !"  ></p>
+  <h1 style="text-align: center;color:black">Error {{error.status}} : {{message}} </h1>
 {% endblock %}
