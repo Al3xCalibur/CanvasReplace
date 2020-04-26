@@ -7,11 +7,15 @@ const width = process.env.WIDTH
 const height = process.env.HEIGHT
 const timerSeconds = process.env.TIMER
 
+const colors = new Set(['#000000', '#404040', '#a0a0a0', '#ffffff', '#a05020', '#542100', '#800000', '#ff0000', '#ff6000',
+    '#ffa000', '#ffff00', '#b0ff00', '#007000', '#40c000', '#00ffa0', '#00d0ff', '#0080ff', '#0040ff', '#000040',
+    '#8060ff', '#8000ff', '#ff30ff', '#ff90ff', '#ffffb0'])
+
 const connected = {}
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-    res.render('index', {title: 'CanvasReplace', width: width, height: height, timer: timerSeconds});
+    res.render('index', {title: 'CanvasReplace', width: width, height: height, timer: timerSeconds, colors: Array.from(colors)});
 });
 /**
  * @param {Server} io
@@ -32,7 +36,6 @@ module.exports = function (io) {
                 io.emit("people", Object.keys(io.sockets.connected).length)
                 database.all().then(
                     (value) => {
-                        console.log(timerSeconds, (Date.now() - connected[uid].lastUpdate)/1000)
                         socket.emit("updateAll", width, height,
                             Math.round(Math.max(0, timerSeconds - (Date.now() - connected[uid].lastUpdate)/1000)), value)
                     },
@@ -51,7 +54,8 @@ module.exports = function (io) {
             if (connected[socket.uid] &&
                 Date.now() - connected[socket.uid].lastUpdate > timerSeconds * 1000 &&
                 Number.isInteger(x) && x >= 0 && x < width &&
-                Number.isInteger(y) && y >= 0 && y < height
+                Number.isInteger(y) && y >= 0 && y < height &&
+                colors.has(color)
             ) {
                 database.checkColor(x, y, color).then(
                     (check) => {
