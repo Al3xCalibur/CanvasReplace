@@ -59,6 +59,15 @@ button {
   cursor: pointer;
 }
 
+#draw {
+  background-color: green;
+  color: white;
+  font-weight: bolder;
+  vertical-align: middle;
+  position: absolute;
+  width: fit-content;
+}
+
 #position, #timer, #people, #download, #info {
   background-color: rgba(0, 0, 0, 0.75);
   color: rgb(250, 250, 250);

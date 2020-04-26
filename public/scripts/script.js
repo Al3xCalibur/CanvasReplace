@@ -117,6 +117,7 @@ window.addEventListener('click', (e) => {
         closeModal()
     }
 })
+
 let hammertime
 if (mobileCheck()) {
     socket.emit("mobile")
@@ -288,6 +289,8 @@ socket.on("updateAll", (widthReceived, heightReceived, data) => {
 
     resizeCanvas()
     updateTransform()
+
+    openModal()
 
     ctxImage.fillStyle = "white"
     for (let i = 0; i < height; i++) {

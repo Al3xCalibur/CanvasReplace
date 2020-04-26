@@ -21,32 +21,36 @@
     <div id="modalInfo" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
+            <p style="text-align: center;"><img src="/favicon.png" alt="Our wonderful emblem !"  ></p>
             <h1 style="text-align: center;">CanvasReplace</h1>
-            <p>Développé dans le cadre du Festiv@rt du BDA de Télécom-Sudparis et Institut Mines-Télécom Business School par
-                le Club Code, le Club Jeux et le CELL. (D'après l'idée du CELL, la réflexion du Club Jeux et le développement du Club Code)
+            <p>Développé dans le cadre du Festiv@rt du BDA de Télécom-Sudparis et de l'Institut Mines-Télécom Business
+                School par le Club Code, le Club Jeux et le CELL. (D'après l'idée du CELL, la réflexion du Club Jeux et le développement du Club Code)
             </p>
-            <p>Il s'agit d'un site similaire à l'événement <i>/r/place</i> qui a développé une idée de canvas collaboratif.</p>
-            <p>Le but étant de promouvoir le Pixel Art et de montrer que les gens sont aussi capables !</p>
+            <p>Il s'agit d'un site similaire à l'événement <i>/r/place</i> qui avait pour idée un canvas
+                collaboratif.</p>
+            <p>Le but est ici de promouvoir le Pixel Art et de montrer ce dont les gens sont capables !</p>
 
             <h2>Principe</h2>
-            <p>Laissez libre court à votre imagination en participant à ce canvas collaboratif pour y proposer vos meilleurs dessins faits de pixels.</p>
-            <p>Pour développer ces aspects, le canvas est de taille limitée et vous ne pouvez poser de pixels que toutes les X secondes.</p>
+            <p>Laissez libre cours à votre imagination en participant à ce canvas collaboratif pour y proposer vos
+                meilleurs dessins faits de pixels.</p>
+            <p>Pour développer ces aspects, le canvas est de taille limitée et vous ne pouvez poser un pixel que
+                toutes les X secondes.</p>
 
-            <h3>Contrôles</h3>
+            <h2>Contrôles</h2>
             <p>Déplacement : clic (gauche, droit, molette) et glisser pour se déplacer</p>
             <p>Zoom : scroll molette</p>
             <p>Poser un pixel : clic gauche sans se déplacer (si vous n'avez pas le timer)</p>
 
             <h2>Règles </h2>
-            <p>Afin que ce canvas puisse être réutilisé et intéressant pour tous les mondes, il est nécessaire de respecter ces quelques règles :</p>
+            <p>Afin que ce canvas puisse être réutilisé et intéressant pour tout le monde, il est nécessaire de
+                respecter ces quelques règles :</p>
             <ul>
-                <li>Pas d'insultes ou d'attaques personnelles, il faut rester courtois, ici le but est d'échanger</li>
-                <li>Pas d'obscenités ()</li>
-                <li>Pas de politique, vos opinions vous regarde</li>
+                <li>Pas d'insultes ou d'attaques personnelles, il faut rester courtois. Ici le but est d'échanger</li>
+                <li>Pas d'obscénités ()</li>
+                <li>Pas de politique, vos opinions ne regardent que vous</li>
                 <li>Pas de triche (bots, techniques pour réduire le temps), on sait que le temps entre deux clics est long, mais c'est pour développer la collaboration !</li>
             </ul>
-            <p>Si ces règles ne sont pas respectées, nous (administrateurs) nous autorisons le droit de couper momentannément le serveur
-                afin de rétablir le respect des règles (suppressions des images gênantes).
+            <p>Si ces règles ne sont pas respectées, nous (administrateurs) nous autorisons le droit de couper momentanément le serveur afin de rétablir le respect des règles (suppression des images gênantes).
             </p>
         </div>
     </div>
@@ -56,6 +60,7 @@
     <div id="people"></div>
     <a id="download" download="CanvasReplace.png" href="" onclick="downloadImg(this);">Télécharger</a>
     <div id="timer" style="visibility: hidden;"></div>
+    <div id="draw"></div>
     <canvas id="interface" width="{{ width }}" height="{{ height }}" style="z-index: 1;"></canvas>
     <canvas id="drawing" width="{{ width }}" height="{{ height }}" style="z-index: 0;"></canvas>
     <canvas id="image" width="400" height="300" style="display: none;"></canvas>
