@@ -20,22 +20,24 @@ router.get('/', function (req, res, next) {
 module.exports = function (io) {
 
     io.on('connection', (socket) => {
-        io.emit("people", Object.keys(io.sockets.connected).length)
-        database.all().then(
-            (value) => {
-                socket.emit("updateAll", width, height, timerSeconds, value)
-            },
-            console.log
-        )
 
         socket.on('login', (uid) => {
-            if(uid !== undefined){
+            if (uid !== undefined) {
                 socket.uid = uid
-                if(!(uid in connected)){
-                    connected[uid] = {socket: socket, lastUpdate: Date.now()-60*60*1000}
+                if (!(uid in connected)) {
+                    connected[uid] = {socket: socket, lastUpdate: Date.now() - 60 * 60 * 1000}
                 } else {
                     connected[uid].socket = socket
                 }
+                io.emit("people", Object.keys(io.sockets.connected).length)
+                database.all().then(
+                    (value) => {
+                        console.log(timerSeconds, (Date.now() - connected[uid].lastUpdate)/1000)
+                        socket.emit("updateAll", width, height,
+                            Math.round(Math.max(0, timerSeconds - (Date.now() - connected[uid].lastUpdate)/1000)), value)
+                    },
+                    console.log
+                )
             } else {
                 socket.disconnect()
             }
@@ -46,7 +48,7 @@ module.exports = function (io) {
         })
 
         socket.on('change', (x, y, color) => {
-            if ( connected[socket.uid] &&
+            if (connected[socket.uid] &&
                 Date.now() - connected[socket.uid].lastUpdate > timerSeconds * 1000 &&
                 Number.isInteger(x) && x >= 0 && x < width &&
                 Number.isInteger(y) && y >= 0 && y < height
