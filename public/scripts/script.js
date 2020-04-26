@@ -314,10 +314,10 @@ socket.on("update", (x, y, color) => {
     draw()
 })
 
-socket.on("updateYou", (x, y, color) => {
+socket.on("updateYou", (x, y, color, timerSec) => {
     ctxImage.fillStyle = color
     ctxImage.fillRect(x, y, 1, 1)
-    setTimer(5)
+    setTimer(timerSec)
     draw()
 })
 

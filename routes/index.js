@@ -5,6 +5,7 @@ let database = require("../database")
 
 const width = 384
 const height = 216
+const timerSeconds = 5
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -38,7 +39,7 @@ module.exports = function (io) {
         socket.on('mobile', () => {console.log("A mobile user has connected")})
         socket.on('change', (x, y, color) => {
             if (session.first &&
-                Date.now() - socket.lastUpdate > 5 * 1000 &&
+                Date.now() - socket.lastUpdate > timerSeconds * 1000 &&
                 Number.isInteger(x) && x >= 0 && x < width &&
                 Number.isInteger(y) && y >= 0 && y < height
             ) {
@@ -48,7 +49,7 @@ module.exports = function (io) {
                             database.insert(x, y, color).then(
                                 () => {
                                     socket.broadcast.emit("update", x, y, color)
-                                    socket.emit("updateYou", x, y, color)
+                                    socket.emit("updateYou", x, y, color, timerSeconds)
                                     socket.lastUpdate = Date.now()
                                 },
                                 console.log
