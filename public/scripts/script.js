@@ -130,6 +130,8 @@ window.addEventListener('click', (e) => {
 
 let hammertime
 if (mobileCheck()) {
+    mobileLastPixel = new Vector(-1, -1)    //to prevent issues if send before drawHint
+
     document.getElementsByClassName('row')[0].style.width = "80%"
     for (i=0;i<buttons.length;i++) {
         buttons[i].style.height = "75px"
@@ -260,6 +262,8 @@ function drawHint(x, y) {
     if (mobileCheck()) {
         mobileLastPixel = new Vector(x, y).toWorld().toNormalizedGrid()
     }
+
+    if (!drawMode) return
 
     position.innerText = "("+(1+highlight.x/size)+", "+(1+highlight.y/size)+")"
 
