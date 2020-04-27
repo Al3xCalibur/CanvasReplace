@@ -52,7 +52,7 @@ module.exports = function (io) {
 
         socket.on('change', (x, y, color) => {
             if (connected[socket.uid] &&
-                Date.now() - connected[socket.uid].lastUpdate > timerSeconds * 1000 &&
+                (Date.now() - connected[socket.uid].lastUpdate > timerSeconds * 1000 || socket.uid === process.env.ADMIN) &&
                 Number.isInteger(x) && x >= 0 && x < width &&
                 Number.isInteger(y) && y >= 0 && y < height &&
                 colors.has(color)
