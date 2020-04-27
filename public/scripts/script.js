@@ -12,8 +12,11 @@ const image = document.getElementById('image')
 const people = document.getElementById('people')
 const position = document.getElementById('position')
 
-const drawButton = document.getElementById('draw')
+const drawButton = document.getElementById('drawMode')
+const addPixel = document.getElementById('draw')
 let drawMode = true
+const buttons = document.getElementsByClassName('button-color')
+let mobileLastPixel
 
 const timer = document.getElementById('timer')
 let timerTime = 0
@@ -128,18 +131,23 @@ window.addEventListener('click', (e) => {
 let hammertime
 if (mobileCheck()) {
     document.getElementsByClassName('row')[0].style.width = "80%"
-    const buttons = document.getElementsByClassName('button-color')
     for (i=0;i<buttons.length;i++) {
-        buttons[i].style.height = "50px"
+        buttons[i].style.height = "75px"
         buttons[i].style.width = "50px"
+        buttons[i].style.visibility = "hidden"
     }
 
     drawButton.style.visibility = 'visible'
-    drawButton.innerText = 'Mode exploration'
+    drawButton.innerText = 'Mode\nexploration'
     drawMode = false
 
     let hammerButton = new Hammer(drawButton)
     hammerButton.on('tap', drawMobileMode)
+
+    let hammerSend = new Hammer(addPixel)
+    hammerSend.on('tap', (e) => {
+        sendPixel(mobileLastPixel)
+    })
 
     socket.emit("mobile")
     hammertime =  new Hammer(canvasInterface)
@@ -159,24 +167,14 @@ close.forEach((it)=>{it.addEventListener('click', closeModal)})
 
 
 function mouseClicked(e) {
-    if (!moved) {
-        let click
-        if (mobileCheck()) {
-            click = (new Vector(e.center.x, e.center.y)).toWorld().toNormalizedGrid()
-        } else {
-            click = (new Vector(e.x, e.y)).toWorld().toNormalizedGrid()
-        }
-
-        if (click.x >= 0 && click.x < width &&
-            click.y >= 0 && click.y < height &&
-            drawMode
-        ) {
-            socket.emit("change", click.x, click.y, currentColor)
-        }
-    }
-
     if (mobileCheck()) {
         drawHint(e.center.x, e.center.y)
+        return
+    }
+
+    if (!moved) {
+        let click = (new Vector(e.x, e.y)).toWorld().toNormalizedGrid()
+        sendPixel(click)
     }
 
     moved = false
@@ -187,13 +185,29 @@ function changeColor(color) {
     currentColor = color
 }
 
+function sendPixel(click) {
+    if (click.x >= 0 && click.x < width &&
+        click.y >= 0 && click.y < height
+    ) {
+        socket.emit("change", click.x, click.y, currentColor)
+    }
+}
+
 function drawMobileMode(e) {
     if (drawMode) {
-        drawButton.innerText= 'Mode exploration'
+        drawButton.innerText= 'Mode\nexploration'
         drawButton.style.backgroundColor = "lawngreen"
+        addPixel.style.visibility= 'hidden'
+        for (i=0;i<buttons.length;i++) {
+            buttons[i].style.visibility = "hidden"
+        }
     } else {
         drawButton.innerText = 'Mode dessin'
         drawButton.style.backgroundColor = "red"
+        addPixel.style.visibility= 'visible'
+        for (i=0;i<buttons.length;i++) {
+            buttons[i].style.visibility = "visible"
+        }
     }
     drawMode = !drawMode
 }
@@ -201,6 +215,7 @@ function drawMobileMode(e) {
 function scroll(e) {
     let event
     let maxScroll
+
     if (mobileCheck()) {
         if (e.additionalEvent === "pinchin") {
             event = new eventMove(e.center.x, e.center.y, null, e.scale*2)
@@ -241,6 +256,10 @@ function scroll(e) {
 function drawHint(x, y) {
     let highlight = new Vector(x, y).toWorld().toGrid()
 
+    if (mobileCheck()) {
+        mobileLastPixel = new Vector(highlight.x, highlight.y)
+    }
+
     position.innerText = "("+(1+highlight.x/size)+", "+(1+highlight.y/size)+")"
 
     let world = canvasToWorld()
@@ -259,7 +278,7 @@ function moveCanvas(e) {
 
     let event
     if (mobileCheck()) {
-        event = new eventMove(e.center.x, e.center.y, e.deltaX/15, e.deltaY/15)
+        event = new eventMove(e.center.x, e.center.y, e.deltaX/12, e.deltaY/12)
     } else {
         if (e.buttons === 0) {
             startDrag = null
@@ -281,6 +300,10 @@ function moveCanvas(e) {
 
     newTranslateY = Math.max(newTranslateY, -showPercent*canvas.height/scale)
     newTranslateY = Math.min(newTranslateY, height*size-(1-showPercent)*canvas.height/scale)
+
+    if (mobileCheck() && drawMode) {
+
+    }
 
     if(startDrag.add(new Vector(-event.x, -event.y)).magnitude() > dragMin) {
         moved = true

@@ -59,7 +59,7 @@ button {
   cursor: pointer;
 }
 
-#position, #timer, #people, #download, #info, #draw {
+#position, #timer, #people, #download, #info, #draw, #drawMode {
   background-color: rgba(0, 0, 0, 0.75);
   color: rgb(250, 250, 250);
   text-align: center;
@@ -76,15 +76,32 @@ button {
   z-index: 10;
 }
 
-#draw {
+#drawMode {
   background-color: lawngreen;
   color: white;
   font-weight: bolder;
   height: 11em;
-  line-height: 11em;
   right:12.5em;
+  padding: 0 0 0 3em;
   bottom:1em;
+  display: flex;
+  align-items: center;
+  place-items: center;
+  font-size: medium;
 }
+
+#draw {
+  background-color: lawngreen;
+  color: white;
+  font-weight: bolder;
+  right: 0.5em;
+  bottom: 6.5em;
+  width: 8em;
+  height: 3.5em;
+  line-height: 3.5em;
+  font-size: xx-large;
+}
+
 
 @media (min-width: 0px){
   .button-color {
