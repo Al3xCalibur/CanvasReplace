@@ -209,6 +209,8 @@ function drawMobileMode(e) {
         for (i=0;i<buttons.length;i++) {
             buttons[i].style.visibility = "hidden"
         }
+        let world = canvasToWorld()
+        ctxInterface.clearRect(world.x - size, world.y - size, world.width + size, world.height + size)
     } else {
         drawButton.innerText = 'Mode dessin'
         drawButton.style.backgroundColor = "red"
