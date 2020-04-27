@@ -203,7 +203,7 @@ function scroll(e) {
     let maxScroll
     if (mobileCheck()) {
         if (e.additionalEvent === "pinchin") {
-            event = new eventMove(e.center.x, e.center.y, null, e.scale)
+            event = new eventMove(e.center.x, e.center.y, null, e.scale*2)
         }
         if (e.additionalEvent === "pinchout") {
             event = new eventMove(e.center.x, e.center.y, null, -e.scale)
@@ -259,7 +259,7 @@ function moveCanvas(e) {
 
     let event
     if (mobileCheck()) {
-        event = new eventMove(e.center.x, e.center.y, e.deltaX/20, e.deltaY/20)
+        event = new eventMove(e.center.x, e.center.y, e.deltaX/15, e.deltaY/15)
     } else {
         if (e.buttons === 0) {
             startDrag = null
