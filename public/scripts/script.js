@@ -156,9 +156,11 @@ if (mobileCheck()) {
     hammertime =  new Hammer(canvasInterface)
     hammertime.get('pan').set({ direction: Hammer.DIRECTION_ALL });
     hammertime.get('pinch').set({enable: true})
+    hammertime.get('pan').set({threshold: 50})
     hammertime.on('pinch', scroll)
     hammertime.on('pan', moveCanvas)
     hammertime.on('tap', mouseClicked)
+    hammertime.on('pan', movePixelHint)
 
 } else {
     canvasInterface.addEventListener('click', mouseClicked)
@@ -280,6 +282,7 @@ function drawHint(x, y) {
 }
 
 function moveCanvas(e) {
+    if (mobileCheck() && drawMode) return
 
     let event
     if (mobileCheck()) {
@@ -306,10 +309,6 @@ function moveCanvas(e) {
     newTranslateY = Math.max(newTranslateY, -showPercent*canvas.height/scale)
     newTranslateY = Math.min(newTranslateY, height*size-(1-showPercent)*canvas.height/scale)
 
-    if (mobileCheck() && drawMode) {
-
-    }
-
     if(startDrag.add(new Vector(-event.x, -event.y)).magnitude() > dragMin) {
         moved = true
         translateX = newTranslateX
@@ -319,6 +318,33 @@ function moveCanvas(e) {
     } else {
         moved = false
     }
+}
+
+function movePixelHint(e) {
+    if (!e.isFinal || !drawMode) return
+    console.log(e.isFinal)
+    if (e.additionalEvent === "panup") {
+        mobileLastPixel.y -= 1
+    } else if (e.additionalEvent === "pandown") {
+        mobileLastPixel.y += 1
+    } else if (e.additionalEvent === "panright") {
+        mobileLastPixel.x += 1
+    } else if (e.additionalEvent === "panleft") {
+        mobileLastPixel.x -= 1
+    }
+
+    position.innerText = "("+(1+mobileLastPixel.x*size)+", "+(1+mobileLastPixel.y*size)+")"
+
+    let world = canvasToWorld()
+    ctxInterface.clearRect(world.x - size, world.y - size, world.width + size, world.height + size)
+    ctxInterface.globalAlpha = 0.8
+    ctxInterface.lineWidth = 1
+    ctxInterface.strokeStyle = "#808080"
+    ctxInterface.fillStyle = currentColor
+    ctxInterface.fillRect(mobileLastPixel.x*size + ctxInterface.lineWidth / 2, mobileLastPixel.y*size + ctxInterface.lineWidth / 2,
+        size - ctxInterface.lineWidth, size - ctxInterface.lineWidth
+    )
+    ctxInterface.strokeRect(mobileLastPixel.x*size, mobileLastPixel.y*size, size, size)
 }
 
 function draw() {
