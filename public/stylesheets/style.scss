@@ -59,16 +59,7 @@ button {
   cursor: pointer;
 }
 
-#draw {
-  background-color: green;
-  color: white;
-  font-weight: bolder;
-  vertical-align: middle;
-  position: absolute;
-  width: fit-content;
-}
-
-#position, #timer, #people, #download, #info {
+#position, #timer, #people, #download, #info, #draw {
   background-color: rgba(0, 0, 0, 0.75);
   color: rgb(250, 250, 250);
   text-align: center;
@@ -83,6 +74,16 @@ button {
   margin-right: auto;
   display: block;
   z-index: 10;
+}
+
+#draw {
+  background-color: lawngreen;
+  color: white;
+  font-weight: bolder;
+  height: 11em;
+  line-height: 11em;
+  right:12.5em;
+  bottom:1em;
 }
 
 @media (min-width: 0px){
