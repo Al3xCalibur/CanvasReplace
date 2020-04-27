@@ -12,6 +12,9 @@ const image = document.getElementById('image')
 const people = document.getElementById('people')
 const position = document.getElementById('position')
 
+const drawButton = document.getElementById('draw')
+let drawMode = true
+
 const timer = document.getElementById('timer')
 let timerTime = 0
 let interval = null
@@ -59,7 +62,7 @@ let translateY = 0
 let showPercent = 1 / 4
 
 ctx.lineWidth = 2
-let currentColor = "black"
+let currentColor = "#000000"
 
 let moved = false
 let highlight = null
@@ -117,13 +120,27 @@ class eventMove {
 
 document.addEventListener('contextmenu', event => event.preventDefault())
 window.addEventListener('click', (e) => {
-    if(e.target === modalInfo){
+    if(e.target === modalInfo || mobileCheck()){
         closeModal()
     }
 })
 
 let hammertime
 if (mobileCheck()) {
+    document.getElementsByClassName('row')[0].style.width = "80%"
+    const buttons = document.getElementsByClassName('button-color')
+    for (i=0;i<buttons.length;i++) {
+        buttons[i].style.height = "50px"
+        buttons[i].style.width = "50px"
+    }
+
+    drawButton.style.visibility = 'visible'
+    drawButton.innerText = 'Mode exploration'
+    drawMode = false
+
+    let hammerButton = new Hammer(drawButton)
+    hammerButton.on('tap', drawMobileMode)
+
     socket.emit("mobile")
     hammertime =  new Hammer(canvasInterface)
     hammertime.get('pan').set({ direction: Hammer.DIRECTION_ALL });
@@ -151,11 +168,17 @@ function mouseClicked(e) {
         }
 
         if (click.x >= 0 && click.x < width &&
-            click.y >= 0 && click.y < height
+            click.y >= 0 && click.y < height &&
+            drawMode
         ) {
             socket.emit("change", click.x, click.y, currentColor)
         }
     }
+
+    if (mobileCheck()) {
+        drawHint(e.center.x, e.center.y)
+    }
+
     moved = false
     startDrag = null
 }
@@ -164,10 +187,20 @@ function changeColor(color) {
     currentColor = color
 }
 
-
+function drawMobileMode(e) {
+    if (drawMode) {
+        drawButton.innerText= 'Mode exploration'
+        drawButton.style.backgroundColor = "lawngreen"
+    } else {
+        drawButton.innerText = 'Mode dessin'
+        drawButton.style.backgroundColor = "red"
+    }
+    drawMode = !drawMode
+}
 
 function scroll(e) {
     let event
+    let maxScroll
     if (mobileCheck()) {
         if (e.additionalEvent === "pinchin") {
             event = new eventMove(e.center.x, e.center.y, null, e.scale)
@@ -175,16 +208,17 @@ function scroll(e) {
         if (e.additionalEvent === "pinchout") {
             event = new eventMove(e.center.x, e.center.y, null, -e.scale)
         }
+        maxScroll = 20
     } else {
         event = new eventMove(e.x, e.y, null, e.deltaY)
+        maxScroll = 10
     }
 
     let relativeScale = 1 - event.movementY * 0.01
-    console.log(event, relativeScale)
 
     let newScale =  scale * relativeScale
     newScale = Math.max(newScale, 0.7)
-    newScale = Math.min(newScale, 10)
+    newScale = Math.min(newScale, maxScroll)
 
     let x = event.x - canvas.offsetLeft, y = event.y - canvas.offsetTop
 
@@ -205,12 +239,7 @@ function scroll(e) {
 }
 
 function drawHint(x, y) {
-    let highlight
-    if (mobileCheck()) {
-        highlight = new Vector(x, y).toWorld().toGrid()
-    } else {
-        highlight = new Vector(x, y).toWorld().toGrid()
-    }
+    let highlight = new Vector(x, y).toWorld().toGrid()
 
     position.innerText = "("+(1+highlight.x/size)+", "+(1+highlight.y/size)+")"
 
