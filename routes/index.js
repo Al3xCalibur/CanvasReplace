@@ -6,6 +6,7 @@ let database = require("../database")
 const width = process.env.WIDTH
 const height = process.env.HEIGHT
 const timerSeconds = process.env.TIMER
+const discord = process.env.DISCORD
 
 const colors = new Set(['#000000', '#404040', '#a0a0a0', '#ffffff', '#a05020', '#542100', '#800000', '#ff0000', '#ff6000',
     '#ffa000', '#ffff00', '#b0ff00', '#007000', '#40c000', '#00ffa0', '#00d0ff', '#0080ff', '#0040ff', '#000040',
@@ -15,7 +16,7 @@ const connected = {}
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-    res.render('index', {title: 'CanvasReplace', width: width, height: height, timer: timerSeconds, colors: Array.from(colors)});
+    res.render('index', {title: 'CanvasReplace', width: width, height: height, timer: timerSeconds, colors: Array.from(colors), discord: discord});
 });
 /**
  * @param {Server} io
