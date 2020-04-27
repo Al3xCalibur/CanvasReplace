@@ -121,14 +121,14 @@ class eventMove {
     }
 }
 
+
 document.addEventListener('contextmenu', event => event.preventDefault())
 window.addEventListener('click', (e) => {
-    if(e.target === modalInfo || mobileCheck()){
+    if(e.target === modalInfo ){
         closeModal()
     }
 })
 
-let hammertime
 if (mobileCheck()) {
     mobileLastPixel = new Vector(-1, -1)    //to prevent issues if send before drawHint
 
@@ -152,8 +152,11 @@ if (mobileCheck()) {
         console.log(mobileLastPixel)
     })
 
+    let hammerInfo = new Hammer(modalInfo)
+    hammerInfo.on('tap', closeModal)
+
     socket.emit("mobile")
-    hammertime =  new Hammer(canvasInterface)
+    let hammertime =  new Hammer(canvasInterface)
     hammertime.get('pan').set({ direction: Hammer.DIRECTION_ALL });
     hammertime.get('pinch').set({enable: true})
     hammertime.get('pan').set({threshold: 50})
