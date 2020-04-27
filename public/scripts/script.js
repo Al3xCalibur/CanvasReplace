@@ -147,6 +147,7 @@ if (mobileCheck()) {
     let hammerSend = new Hammer(addPixel)
     hammerSend.on('tap', (e) => {
         sendPixel(mobileLastPixel)
+        console.log(mobileLastPixel)
     })
 
     socket.emit("mobile")
@@ -257,7 +258,7 @@ function drawHint(x, y) {
     let highlight = new Vector(x, y).toWorld().toGrid()
 
     if (mobileCheck()) {
-        mobileLastPixel = new Vector(highlight.x, highlight.y)
+        mobileLastPixel = new Vector(x, y).toWorld().toNormalizedGrid()
     }
 
     position.innerText = "("+(1+highlight.x/size)+", "+(1+highlight.y/size)+")"
