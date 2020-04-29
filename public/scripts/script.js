@@ -167,12 +167,26 @@ if (mobileCheck()) {
 
 } else {
     canvasInterface.addEventListener('click', mouseClicked)
+    canvasInterface.addEventListener('mousedown', mouseDown)
     canvasInterface.addEventListener('wheel', scroll)
     canvasInterface.addEventListener('mousemove', moveCanvas)
 }
 info.addEventListener('click', openModal)
 close.forEach((it)=>{it.addEventListener('click', closeModal)})
 
+
+function mouseDown(e){
+    if(e.button === 1){
+        let u = (new Vector(e.x, e.y)).toWorld().toNormalizedGrid()
+        if(u.x >= 0 && u.x < width && u.y >= 0 && u.y < height) {
+            let data = ctxImage.getImageData(u.x, u.y, 1, 1).data
+            let color = intArrayToStringColor(data, false)
+            console.log(color)
+            changeColor(color)
+            drawHint(e.x, e.y)
+        }
+    }
+}
 
 function mouseClicked(e) {
     if (mobileCheck()) {
@@ -457,4 +471,13 @@ function closeModal() {
     modalInfo.style.display = "none"
 }
 
-
+function intArrayToStringColor(data, alpha){
+    let color = "#"
+    let max = alpha?4:3;
+    for(let i =0; i <max; i++){
+        let hex = data[i].toString(16)
+        if(hex.length === 1) hex = '0'+hex
+        color += hex
+    }
+    return color
+}
