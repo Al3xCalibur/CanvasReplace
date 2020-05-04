@@ -78,6 +78,7 @@ class Rectangle {
         this.width = width
         this.height = height
     }
+
 }
 
 class Vector {
@@ -101,7 +102,6 @@ class Vector {
     toGrid() {
         return new Vector(Math.floor(this.x / size) * size, Math.floor(this.y / size) * size)
     }
-
 
     toNormalizedGrid() {
         return new Vector(Math.floor(this.x / size), Math.floor(this.y / size))
@@ -368,8 +368,10 @@ function movePixelHint(e) {
 
 function draw() {
     let world = canvasToWorld()
-    ctx.clearRect(world.x - size, world.y - size, world.width + size, world.height + size)
-    ctx.drawImage(image, 0, 0, size * image.width, size * image.height)
+    ctx.clearRect(world.x, world.y, world.width, world.height)
+    console.log(world, size*width, size*height)
+    ctx.drawImage(image,world.x/size, world.y/size, world.width/size, world.height/size,
+        world.x, world.y, world.width, world.height)
 }
 
 function updateTransform() {
@@ -387,8 +389,8 @@ function canvasToWorld() {
 
 socket.on("updateAll", (widthReceived, heightReceived, timer, data) => {
     setTimer(timer)
-    width = widthReceived
-    height = heightReceived
+    width = parseInt(widthReceived)
+    height = parseInt(heightReceived)
 
     image.width = width
     image.height = height
