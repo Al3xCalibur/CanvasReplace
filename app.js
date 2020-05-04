@@ -30,7 +30,7 @@ app.use(sassMiddleware({
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter(io));
+app.use('/canvas', indexRouter(io));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

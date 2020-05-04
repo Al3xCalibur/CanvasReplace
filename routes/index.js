@@ -12,7 +12,11 @@ const colors = new Set(['#000000', '#404040', '#a0a0a0', '#ffffff', '#a05020', '
     '#ffa000', '#ffff00', '#b0ff00', '#007000', '#40c000', '#00ffa0', '#00d0ff', '#0080ff', '#0040ff', '#000040',
     '#8060ff', '#8000ff', '#ff30ff', '#ff90ff', '#ffffb0'])
 
+const bans = new Set(process.env.BANS)
+
 const connected = {}
+
+const ips = {}
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -23,9 +27,24 @@ router.get('/', function (req, res, next) {
  * @returns {Router}
  */
 module.exports = function (io) {
-
-    io.on('connection', (socket) => {
-
+    let ioCanvas = io.of('/canvas')
+    ioCanvas.on('connection', (socket) => {
+        let ip = socket.request.connection.remoteAddress
+        if(bans.has(ip)){
+            socket.disconnect()
+        }
+        if(ip in ips){
+            ips[ip].total++
+        } else {
+            ips[ip] = {total: 0}
+        }
+        if(ips[ip].total > 5) {
+            console.log(ip, ips[ip])
+        }
+        if(ips[ip].total > 12) {
+            console.log("ban "+ip, ips[ip])
+            // socket.disconnect()
+        }
         socket.on('login', (uid) => {
             if (uid !== undefined) {
                 socket.uid = uid
@@ -34,7 +53,7 @@ module.exports = function (io) {
                 } else {
                     connected[uid].socket = socket
                 }
-                io.emit("people", Object.keys(io.sockets.connected).length)
+                ioCanvas.emit("people", Object.keys(ioCanvas.connected).length)
                 database.all().then(
                     (value) => {
                         socket.emit("updateAll", width, height,
@@ -81,8 +100,12 @@ module.exports = function (io) {
         })
 
         socket.on('disconnect', () => {
-            io.emit('people', Object.keys(io.sockets.connected).length)
-
+            ioCanvas.emit('people', Object.keys(ioCanvas.connected).length)
+            if(ips[ip]){
+                ips[ip].total--
+                if(ips[ip].total === 0)
+                    delete ips[ip]
+            }
             setTimeout(() => {
                 if (connected[socket.uid] && connected[socket.uid].socket === socket)
                     delete connected[socket.uid]

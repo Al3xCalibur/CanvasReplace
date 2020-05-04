@@ -1,4 +1,4 @@
-const socket = io(window.location.origin)
+const socket = io('/canvas')
 const title = document.querySelector('title')
 const titleText = title.innerText
 const modalInfo = document.getElementById('modalInfo')
