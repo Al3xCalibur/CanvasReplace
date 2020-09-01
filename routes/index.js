@@ -27,7 +27,7 @@ router.get('/json', function (req, res, next) {
     database.all().then(
         (value) => {
             let r
-            if(value.length <= width*height/5)
+            if(value.length <= width*height/3)
                 r = {array: false, value:value}
             else
                 r = {array: true, value:databaseValueToArray(value)}
@@ -72,7 +72,7 @@ module.exports = function (io) {
                 database.all().then(
                     (value) => {
                         let res
-                        if(value.length <= width*height/5)
+                        if(value.length <= width*height/3)
                             res = {array: false, value:value}
                         else
                             res = {array: true, value:databaseValueToArray(value)}
