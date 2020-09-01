@@ -22,6 +22,16 @@ const ips = {}
 router.get('/', function (req, res, next) {
     res.render('index', {title: 'CanvasReplace', width: width, height: height, timer: timerSeconds, colors: Array.from(colors), discord: discord});
 });
+
+router.get('/json', function (req, res, next) {
+    database.all().then(
+        (value) => {
+            res.json(value)
+        },
+        console.log
+    )
+})
+
 /**
  * @param {Server} io
  * @returns {Router}
