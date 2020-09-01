@@ -26,7 +26,7 @@ router.get('/', function (req, res, next) {
 router.get('/json', function (req, res, next) {
     database.all().then(
         (value) => {
-            res.json(value)
+            res.json(databaseValueToArray(value))
         },
         console.log
     )
@@ -67,7 +67,8 @@ module.exports = function (io) {
                 database.all().then(
                     (value) => {
                         socket.emit("updateAll", width, height,
-                            Math.round(Math.max(0, timerSeconds - (Date.now() - connected[uid].lastUpdate)/1000)), value)
+                            Math.round(Math.max(0, timerSeconds - (Date.now() - connected[uid].lastUpdate)/1000)),
+                            databaseValueToArray(value))
                     },
                     console.log
                 )
@@ -126,4 +127,12 @@ module.exports = function (io) {
     })
 
     return router
+}
+
+function databaseValueToArray(value) {
+    let result = Array.from(Array(parseInt(height)), () => new Array(parseInt(width)))
+    for(let v of value) {
+        result[parseInt(v.y)][parseInt(v.x)] = v.color
+    }
+    return result
 }

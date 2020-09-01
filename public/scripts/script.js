@@ -405,12 +405,16 @@ socket.on("updateAll", (widthReceived, heightReceived, timer, data) => {
         pixels[i+2] = 255
         pixels[i+3] = 255
     }
-    for(let pixel of data){
-        console.log(pixel.color)
-        let rgb = hexToRgb(pixel.color) || hexToRgb(colourNameToHex(pixel.color))
-        pixels[pixel.y*4*width+4*pixel.x] = rgb.r
-        pixels[pixel.y*4*width+4*pixel.x+1] = rgb.g
-        pixels[pixel.y*4*width+4*pixel.x+2] = rgb.b
+    for(let i in data){
+        for(let j in data[i]) {
+            let pixel = {color: data[i][j], y: i, x: j}
+            if(pixel.color != null) {
+                let rgb = hexToRgb(pixel.color) || hexToRgb(colourNameToHex(pixel.color))
+                pixels[pixel.y * 4 * width + 4 * pixel.x] = rgb.r
+                pixels[pixel.y * 4 * width + 4 * pixel.x + 1] = rgb.g
+                pixels[pixel.y * 4 * width + 4 * pixel.x + 2] = rgb.b
+            }
+        }
     }
     ctxImage.putImageData(pixelsData, 0, 0)
 
