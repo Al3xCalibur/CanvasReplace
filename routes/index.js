@@ -26,7 +26,12 @@ router.get('/', function (req, res, next) {
 router.get('/json', function (req, res, next) {
     database.all().then(
         (value) => {
-            res.json(databaseValueToArray(value))
+            let r
+            if(value.length <= width*height/5)
+                r = {array: false, value:value}
+            else
+                r = {array: true, value:databaseValueToArray(value)}
+            res.json(r)
         },
         console.log
     )
@@ -66,9 +71,14 @@ module.exports = function (io) {
                 ioCanvas.emit("people", Object.keys(ioCanvas.connected).length)
                 database.all().then(
                     (value) => {
+                        let res
+                        if(value.length <= width*height/5)
+                            res = {array: false, value:value}
+                        else
+                            res = {array: true, value:databaseValueToArray(value)}
                         socket.emit("updateAll", width, height,
                             Math.round(Math.max(0, timerSeconds - (Date.now() - connected[uid].lastUpdate)/1000)),
-                            databaseValueToArray(value))
+                            res)
                     },
                     console.log
                 )

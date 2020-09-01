@@ -405,10 +405,22 @@ socket.on("updateAll", (widthReceived, heightReceived, timer, data) => {
         pixels[i+2] = 255
         pixels[i+3] = 255
     }
-    for(let i in data){
-        for(let j in data[i]) {
-            let pixel = {color: data[i][j], y: i, x: j}
-            if(pixel.color != null) {
+
+    if(data.array) {
+        for (let i in data.value) {
+            for (let j in data.value[i]) {
+                let color = data.value[i][j]
+                if (olor != null) {
+                    let rgb = hexToRgb(color) || hexToRgb(colourNameToHex(color))
+                    pixels[i * 4 * width + 4 * j] = rgb.r
+                    pixels[i * 4 * width + 4 * j + 1] = rgb.g
+                    pixels[i * 4 * width + 4 * j + 2] = rgb.b
+                }
+            }
+        }
+    } else {
+        for(let pixel of data.value) {
+            if (pixel.color != null) {
                 let rgb = hexToRgb(pixel.color) || hexToRgb(colourNameToHex(pixel.color))
                 pixels[pixel.y * 4 * width + 4 * pixel.x] = rgb.r
                 pixels[pixel.y * 4 * width + 4 * pixel.x + 1] = rgb.g
