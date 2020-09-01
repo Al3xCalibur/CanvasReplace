@@ -27,10 +27,10 @@ router.get('/json', function (req, res, next) {
     database.all().then(
         (value) => {
             let r
-            if(value.length <= width*height/3)
+            // if(value.length <= width*height/3)
                 r = {array: false, value:value}
-            else
-                r = {array: true, value:databaseValueToArray(value)}
+            // else
+            //     r = {array: true, value:databaseValueToArray(value)}
             res.json(r)
         },
         console.log
@@ -72,10 +72,10 @@ module.exports = function (io) {
                 database.all().then(
                     (value) => {
                         let res
-                        if(value.length <= width*height/3)
+                        // if(value.length <= width*height/3)
                             res = {array: false, value:value}
-                        else
-                            res = {array: true, value:databaseValueToArray(value)}
+                        // else
+                        //     res = {array: true, value:databaseValueToArray(value)}
                         socket.emit("updateAll", width, height,
                             Math.round(Math.max(0, timerSeconds - (Date.now() - connected[uid].lastUpdate)/1000)),
                             res)
