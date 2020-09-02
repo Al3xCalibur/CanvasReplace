@@ -28,9 +28,9 @@ router.get('/json', function (req, res, next) {
         (value) => {
             let r
             if(value.length <= width*height/4)
-                r = {array: false, width: width, height: height, value: value}
+                r = {array: false, width: parseInt(width), height: parseInt(height), value: value}
             else
-                r = {array: true, width: width, height: height, value: databaseValueToArray(value)}
+                r = {array: true, width: parseInt(width), height: parseInt(height), value: databaseValueToArray(value)}
             res.json(r)
         },
         console.log
