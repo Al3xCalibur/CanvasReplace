@@ -3,8 +3,8 @@ let router = express.Router();
 
 let database = require("../database")
 
-const width = process.env.WIDTH
-const height = process.env.HEIGHT
+const width = parseInt(process.env.WIDTH)
+const height = parseInt(process.env.HEIGHT)
 const timerSeconds = process.env.TIMER
 const discord = process.env.DISCORD
 
@@ -28,9 +28,9 @@ router.get('/json', function (req, res, next) {
         (value) => {
             let r
             if(value.length <= width*height/4)
-                r = {array: false, width: parseInt(width), height: parseInt(height), value: value}
+                r = {array: false, width: width, height: height, value: value}
             else
-                r = {array: true, width: parseInt(width), height: parseInt(height), value: databaseValueToArray(value)}
+                r = {array: true, width: width, height: height, value: databaseValueToArray(value)}
             res.json(r)
         },
         console.log
@@ -140,7 +140,7 @@ module.exports = function (io) {
 }
 
 function databaseValueToArray(value) {
-    let result = Array.from(Array(parseInt(height)), () => new Array(parseInt(width)))
+    let result = Array.from(Array(height), () => new Array(width))
     for(let v of value) {
         result[parseInt(v.y)][parseInt(v.x)] = v.color
     }
