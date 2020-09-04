@@ -98,6 +98,8 @@ module.exports = function (io) {
                 Number.isInteger(y) && y >= 0 && y < height &&
                 colors.has(color)
             ) {
+                let oldUpdate = connected[socket.uid].lastUpdate
+                connected[socket.uid].lastUpdate = Date.now()
                 database.checkColor(x, y, color).then(
                     (check) => {
                         if (check) {
@@ -109,6 +111,8 @@ module.exports = function (io) {
                                 },
                                 console.log
                             )
+                        } else {
+                            connected[socket.uid].lastUpdate = oldUpdate
                         }
                     },
                     console.log
