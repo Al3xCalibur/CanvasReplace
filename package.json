@@ -1,7 +1,8 @@
 {
   "name": "canvasreplace",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
+  "repository": "github:Al3xCalibur/CanvasReplace",
   "main": "./bin/www",
   "scripts": {
     "create-database": "cat database.sql | sqlite3 database.db",
