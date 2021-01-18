@@ -42,7 +42,7 @@ router.get('/json', function (req, res, next) {
  * @returns {Router}
  */
 module.exports = function (io) {
-    let ioCanvas = io.of('/canvas')
+    let ioCanvas = io.of(process.env.BASE_URL)
     ioCanvas.on('connection', (socket) => {
         let ip = socket.request.connection.remoteAddress
         if(bans.has(ip)){
