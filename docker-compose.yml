@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  canvas:
+    build: .
+    ports:
+      - 8000:80
+    volumes:
+      - ./database.db:/home/node/app/database.db
+    env_file:
+      - .env
