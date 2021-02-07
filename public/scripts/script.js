@@ -467,7 +467,7 @@ function setTimer(seconds) {
         interval = setInterval(() => {
             timerTime--
 
-            if (timerTime === 0) {
+            if (timerTime <= 0) {
                 clearInterval(interval)
                 timer.style.visibility = 'hidden'
                 title.innerText = titleText
