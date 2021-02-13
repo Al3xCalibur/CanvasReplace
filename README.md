@@ -33,6 +33,8 @@ They can be set in the `.env` file, in the docker-compose file, on the command-l
 
 `PORT`: The port on which to run the app. If you use docker, you'll need to expose it in a proper way.
 
+`DATABASE_PATH` : Path to the database
+
 `WIDTH`: Horizontal dimension of the canvas in pixels.
 
 `HEIGHT`: Vertical dimension of the canvas in pixels.
