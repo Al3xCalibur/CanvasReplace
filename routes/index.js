@@ -8,6 +8,8 @@ const height = parseInt(process.env.HEIGHT)
 const timerSeconds = process.env.TIMER
 const discord = process.env.DISCORD
 
+const datetimeWhitelist = parseDatetimeList(process.env.DATETIME_WHITELIST);
+
 const colors = new Set(['#000000', '#404040', '#a0a0a0', '#ffffff', '#a05020', '#542100', '#800000', '#ff0000', '#ff6000',
     '#ffa000', '#ffff00', '#b0ff00', '#007000', '#40c000', '#00ffa0', '#00d0ff', '#0080ff', '#0040ff', '#000040',
     '#8060ff', '#8000ff', '#ff30ff', '#ff90ff', '#ffffb0'])
@@ -17,6 +19,51 @@ const bans = new Set(process.env.BANS)
 const connected = {}
 
 const ips = {}
+
+/**
+ * Parse a string in the form
+ * yyyy-mm-dd hh:mm:ss#yyyy-mm-dd hh:mm:ss;yyyy-mm-dd hh:mm:ss#yyyy-mm-dd hh:mm:ss
+ * to a list of list of dates, of the form
+ * [
+ *  [date_begin, date_end],
+ *  [date_begin, date_end]
+ * ]
+ * @param {String} datetimeString 
+ */
+function parseDatetimeList(datetimeString) {
+    console.log(datetimeString);
+    console.log(typeof(datetimeString));
+    if (datetimeString === undefined || datetimeString === "") {
+        return [];
+    }
+    let res = [];
+    let singleDate;
+    datetimeString.split(';').forEach(element => {
+        singleDate = element.split('#');
+        res.push([new Date(singleDate[0]), new Date(singleDate[1])]);
+    });
+    // TODO : sort res by starting dates
+    console.log(res);
+    return res;
+}
+
+/**
+ * Will return true if givenTime is in an allowed writing time.
+ * This function is very naive and doesn't suppose that datetimaWhitelist is sorted
+ * @param {Date} givenTime 
+ */
+function isTimeInWritingAllowed(givenTime) {
+    let res = false;
+    if (datetimeWhitelist.length === 0) {
+        return true;
+    }
+    datetimeWhitelist.forEach(tupleDate => {
+        if (tupleDate[0] < givenTime && tupleDate[1] > givenTime) {
+            res = true;
+        }
+    });
+    return res;
+}
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -93,6 +140,7 @@ module.exports = function (io) {
 
         socket.on('change', (x, y, color) => {
             if (connected[socket.uid] &&
+                isTimeInWritingAllowed(new Date()) &&
                 (Date.now() - connected[socket.uid].lastUpdate > timerSeconds * 1000 || socket.uid === process.env.ADMIN) &&
                 Number.isInteger(x) && x >= 0 && x < width &&
                 Number.isInteger(y) && y >= 0 && y < height &&

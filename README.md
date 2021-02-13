@@ -43,3 +43,7 @@ They can be set in the `.env` file, in the docker-compose file, on the command-l
 
 `BASE_URL`: Base URL on which to run the canvas.
 
+`DATETIME_WHITELIST`: String of the form `yyyy-mm-dd hh:mm:ss#yyyy-mm-dd hh:mm:ss;yyyy-mm-dd hh:mm:ss#yyyy-mm-dd hh:mm:ss`.
+It defines times during which drawing on the canvas is allowed.
+If `DATETIME_WHITELIST` isn't specified, or is empty, canvas edition is allowed without time constraint.
+
