@@ -33,6 +33,8 @@ They can be set in the `.env` file, in the docker-compose file, on the command-l
 
 `PORT`: The port on which to run the app. If you use docker, you'll need to expose it in a proper way.
 
+`DATABASE_PATH` : Path to the database
+
 `WIDTH`: Horizontal dimension of the canvas in pixels.
 
 `HEIGHT`: Vertical dimension of the canvas in pixels.
@@ -42,4 +44,8 @@ They can be set in the `.env` file, in the docker-compose file, on the command-l
 `DISCORD`: Discord adress to be displayed in the "Welcome panel".
 
 `BASE_URL`: Base URL on which to run the canvas.
+
+`DATETIME_WHITELIST`: String of the form `yyyy-mm-dd hh:mm:ss#yyyy-mm-dd hh:mm:ss;yyyy-mm-dd hh:mm:ss#yyyy-mm-dd hh:mm:ss`.
+It defines times during which drawing on the canvas is allowed.
+If `DATETIME_WHITELIST` isn't specified, or is empty, canvas edition is allowed without time constraint.
 
