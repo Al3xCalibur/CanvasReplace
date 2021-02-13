@@ -435,6 +435,19 @@ socket.on("updateAll", (widthReceived, heightReceived, timer, data) => {
 
 })
 
+socket.on("editingRight", allowed => {
+    timer.style.visibility = 'visible';
+    if (!allowed) {
+        timer.innerText = "Edition disabled";
+    } else {
+        timer.innerText = "Edition enabled";
+    }
+    new Promise(resolve => setTimeout(resolve, 3000)).then(() => {
+        timer.style.visibility = 'hidden';
+        title.innerText = titleText;
+    })
+})
+
 socket.on("update", (x, y, color) => {
     ctxImage.fillStyle = color
     ctxImage.fillRect(x, y, 1, 1)
@@ -461,21 +474,21 @@ function setTimer(seconds) {
         if (interval != null)
             clearInterval(interval)
         timerTime = seconds
-        timer.innerText = timerTime + " seconds"
-        title.innerText = timerTime + "s | " + titleText
+        timer.innerText = Math.ceil(timerTime) + " seconds"
+        title.innerText = Math.ceil(timerTime) + "s | " + titleText
         timer.style.visibility = 'visible'
         interval = setInterval(() => {
-            timerTime--
+            timerTime -= 0.1;
 
             if (timerTime <= 0) {
                 clearInterval(interval)
                 timer.style.visibility = 'hidden'
                 title.innerText = titleText
             } else {
-                timer.innerText = timerTime + " seconds"
-                title.innerText = timerTime + "s | " + titleText
+                timer.innerText = Math.ceil(timerTime) + " seconds"
+                title.innerText = Math.ceil(timerTime) + "s | " + titleText
             }
-        }, 1000)
+        }, 100)
     }
 }
 
