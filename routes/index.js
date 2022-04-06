@@ -115,7 +115,7 @@ module.exports = function (io) {
                 } else {
                     connected[uid].socket = socket
                 }
-                ioCanvas.emit("people", Object.keys(ioCanvas.connected).length)
+                ioCanvas.emit("people", Object.keys(connected).length)
                 database.all().then(
                     (value) => {
                         let res
@@ -176,7 +176,7 @@ module.exports = function (io) {
         })
 
         socket.on('disconnect', () => {
-            ioCanvas.emit('people', Object.keys(ioCanvas.connected).length)
+            ioCanvas.emit('people', Object.keys(connected).length)
             if(ips[ip]){
                 ips[ip].total--
                 if(ips[ip].total === 0)
